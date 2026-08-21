@@ -23,7 +23,9 @@ export function Header() {
                 onMouseEnter={() => setOpenMenu(item.label)}
                 onMouseLeave={() => setOpenMenu(null)}
               >
-                <button className="transition hover:text-bone">{item.label}</button>
+                <Link href={item.href} className="transition hover:text-bone">
+                     {item.label}
+                </Link>
                 {openMenu === item.label && (
                   <div className="absolute left-0 top-full min-w-52 rounded-md border border-bone/10 bg-ink py-2 shadow-lg">
                     {item.children.map((child) => (
