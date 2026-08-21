@@ -1,4 +1,5 @@
 import { RequisitionCard } from "@/components/sections/RequisitionCard";
+import { PanelChip } from "@/components/sections/PanelChip";
 
 export default function HomePage() {
   return (
@@ -22,6 +23,15 @@ export default function HomePage() {
           location="Brighton clinic · 380 Washington St"
           turnaround="~24 hrs"
         />
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-2">
+        <PanelChip label="5-PANEL" />
+        <PanelChip label="7-PANEL" />
+        <PanelChip label="9-PANEL" />
+        <PanelChip label="eCUP+ 4A" variant="highlight" />
+        <PanelChip label="HAIR 5" />
+        <PanelChip label="MOBILE" />
       </div>
     </div>
   );
