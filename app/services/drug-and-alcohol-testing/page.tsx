@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
+import { Reveal } from "@/components/ui/Reveal";
 
 const collectionMethods = [
   {
@@ -36,15 +37,16 @@ export default function DrugAndAlcoholTestingPage() {
       <section className="mx-auto max-w-6xl px-6 py-14">
         <h2 className="mb-6 font-display text-xl font-medium text-ink">Choose a collection method</h2>
         <div className="grid gap-6 md:grid-cols-2">
-          {collectionMethods.map((method) => (
-            <Link
-              key={method.href}
-              href={method.href}
-              className="rounded-lg border border-slate/20 bg-white p-5 transition hover:border-slate/40"
-            >
-              <h3 className="mb-1.5 font-display text-base font-medium text-ink">{method.title}</h3>
-              <p className="text-sm text-slate">{method.description}</p>
-            </Link>
+          {collectionMethods.map((method, index) => (
+            <Reveal key={method.href} delay={index * 80}>
+              <Link
+                href={method.href}
+                className="block rounded-lg border border-slate/20 bg-white p-5 transition hover:border-slate/40 hover:shadow-sm"
+              >
+                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{method.title}</h3>
+                <p className="text-sm text-slate">{method.description}</p>
+              </Link>
+            </Reveal>
           ))}
         </div>
       </section>

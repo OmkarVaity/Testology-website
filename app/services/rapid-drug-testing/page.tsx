@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import { RequisitionCard } from "@/components/sections/RequisitionCard";
+import { Reveal } from "@/components/ui/Reveal";
 
 const details = [
   {
@@ -33,22 +34,28 @@ export default function RapidDrugTestingPage() {
           <div>
             <h2 className="mb-6 font-display text-xl font-medium text-ink">What to expect</h2>
             <div className="space-y-6">
-              {details.map((detail) => (
-                <div key={detail.title}>
-                  <h3 className="mb-1 font-display text-base font-medium text-ink">{detail.title}</h3>
-                  <p className="text-sm text-slate">{detail.description}</p>
-                </div>
+              {details.map((detail, index) => (
+                <Reveal key={detail.title} delay={index * 80}>
+                  <div>
+                    <h3 className="mb-1 font-display text-base font-medium text-ink">
+                      {detail.title}
+                    </h3>
+                    <p className="text-sm text-slate">{detail.description}</p>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
 
-          <RequisitionCard
-            reqNumber="10852"
-            status="Walk-in"
-            testName="Rapid instant-cup screen"
-            location="Brighton clinic · 380 Washington St"
-            turnaround="~5 min"
-          />
+          <Reveal delay={160}>
+            <RequisitionCard
+              reqNumber="10852"
+              status="Walk-in"
+              testName="Rapid instant-cup screen"
+              location="Brighton clinic · 380 Washington St"
+              turnaround="~5 min"
+            />
+          </Reveal>
         </div>
       </section>
 
