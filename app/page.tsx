@@ -1,3 +1,5 @@
+import { RequisitionCard } from "@/components/sections/RequisitionCard";
+
 export default function HomePage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
@@ -11,6 +13,16 @@ export default function HomePage() {
         Homepage sections build out next — this confirms the layout, fonts, and
         brand colors are wired up correctly.
       </p>
+
+      <div className="mt-8 max-w-sm">
+        <RequisitionCard
+          reqNumber="10847"
+          status="Walk-in"
+          testName="10-panel urine screen"
+          location="Brighton clinic · 380 Washington St"
+          turnaround="~24 hrs"
+        />
+      </div>
     </div>
   );
 }
