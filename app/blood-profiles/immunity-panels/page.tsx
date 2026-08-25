@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Immunity Panels | Testology, Inc.",
+  description:
+    "MMR, varicella, hepatitis B, and TB immunity testing for employment and school clearance requirements.",
+};
+
 const panels = [
   {
     title: "MMR immunity",

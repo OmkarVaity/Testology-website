@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Mobile Phlebotomy | Testology, Inc.",
+  description:
+    "At-home and office blood draws from a certified phlebotomist, with the same lab-grade handling as an in-clinic visit.",
+};
+
 const details = [
   {
     title: "At-home & office draws",

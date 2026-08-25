@@ -3,6 +3,14 @@ import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import { PanelChip } from "@/components/sections/PanelChip";
 import { Reveal } from "@/components/ui/Reveal";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "DOT Drug & Alcohol Testing | Testology, Inc.",
+  description:
+    "FMCSA-compliant DOT drug and alcohol testing in Brighton, MA, including random pool management and return-to-duty testing.",
+};
+
 const testTriggers = [
   {
     title: "Pre-employment",

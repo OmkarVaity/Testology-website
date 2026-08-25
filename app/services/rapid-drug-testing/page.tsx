@@ -2,6 +2,14 @@ import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import { RequisitionCard } from "@/components/sections/RequisitionCard";
 import { Reveal } from "@/components/ui/Reveal";
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Rapid Drug Testing | Testology, Inc.",
+  description:
+    "Instant-cup drug screening with results in minutes. Walk-ins welcome at our Brighton, MA clinic.",
+};
 
 const details = [
   {

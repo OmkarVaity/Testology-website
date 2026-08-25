@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Partnered Labs | Testology, Inc.",
+  description:
+    "An authorized collection site for Quest Diagnostics, LabCorp, and eScreen, routing results into established lab networks.",
+};
+
 const labs = [
   {
     title: "Quest Diagnostics",

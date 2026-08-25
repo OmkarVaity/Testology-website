@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "DOT & Employment Physicals | Testology, Inc.",
+  description:
+    "DOT physicals, annual health screenings, and pre-placement physical exams performed by certified medical examiners.",
+};
+
 const physicalTypes = [
   {
     title: "DOT physicals",

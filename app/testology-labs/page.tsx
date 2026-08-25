@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Testology Labs — Wellness Panels | Testology, Inc.",
+  description:
+    "Baseline wellness labs, peptide therapy monitoring, and supplement response tracking in Brighton, MA.",
+};
+
 const offerings = [
   {
     title: "Baseline wellness labs",

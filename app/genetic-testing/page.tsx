@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Genetic Testing | Testology, Inc.",
+  description:
+    "Carrier screening, pharmacogenomic testing, and ancestry & wellness genetic panels in Brighton, MA.",
+};
+
 const panels = [
   {
     title: "Carrier screening",

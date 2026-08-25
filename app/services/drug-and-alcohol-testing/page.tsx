@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import { Reveal } from "@/components/ui/Reveal";
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Drug & Alcohol Testing | Testology, Inc.",
+  description:
+    "Urine, oral fluid, hair, and rapid drug and alcohol testing in Brighton, MA, with proper chain-of-custody procedure.",
+};
 
 const collectionMethods = [
   {

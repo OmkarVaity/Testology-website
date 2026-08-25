@@ -1,5 +1,13 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Oral Fluid Testing | Testology, Inc.",
+  description:
+    "Non-invasive, directly observed saliva-based drug testing, well suited to reasonable-suspicion and post-accident screening.",
+};
 
 const details = [
   {

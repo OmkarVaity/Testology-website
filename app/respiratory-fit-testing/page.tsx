@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Respiratory Fit Testing | Testology, Inc.",
+  description:
+    "Qualitative and quantitative respirator fit testing for annual OSHA compliance.",
+};
+
 const details = [
   {
     title: "Qualitative fit testing",

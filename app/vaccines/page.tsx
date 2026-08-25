@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Vaccines | Testology, Inc.",
+  description:
+    "On-site administration of flu, Hepatitis B, Tdap, and MMR vaccines at our Brighton, MA clinic.",
+};
+
 const vaccines = [
   {
     title: "Flu vaccine",

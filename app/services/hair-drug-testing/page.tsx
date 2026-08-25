@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import { PanelChip } from "@/components/sections/PanelChip";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Hair Drug Testing | Testology, Inc.",
+  description:
+    "Hair follicle drug testing detecting patterns of use up to 90 days back, available in Brighton, MA.",
+};
 
 const details = [
   {

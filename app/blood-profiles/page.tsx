@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blood Profiles | Testology, Inc.",
+  description:
+    "Immunity panels and specialty blood panels for employment, wellness, and diagnostic needs in Brighton, MA.",
+};
+
 const panelCategories = [
   {
     title: "Immunity panels",

@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Paramedical Services | Testology, Inc.",
+  description:
+    "Insurance exam collection, EKGs, and vitals for life and health insurance underwriting.",
+};
+
 const services = [
   {
     title: "Insurance exam collection",

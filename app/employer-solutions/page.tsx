@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Employer Solutions | Testology, Inc.",
+  description:
+    "Random pool management, DOT and non-DOT program setup, and TPA integration for workplace drug testing programs.",
+};
+
 const offerings = [
   {
     title: "Random pool management",

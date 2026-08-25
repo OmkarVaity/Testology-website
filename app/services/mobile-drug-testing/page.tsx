@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Mobile Drug Testing | Testology, Inc.",
+  description:
+    "On-site drug testing for group events, post-accident response, and off-hours collection across the Boston area.",
+};
+
 const details = [
   {
     title: "We come to your site",
