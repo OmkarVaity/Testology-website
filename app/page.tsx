@@ -6,6 +6,8 @@ import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { ServicesGrid } from "@/components/sections/ServicesGrid";
 import { FindUs } from "@/components/sections/FindUs";
+import { Affiliations } from "@/components/sections/Affiliations";
+
 
 export default function HomePage() {
   return (
@@ -16,6 +18,7 @@ export default function HomePage() {
       <Differentiators />
       <HowItWorks />
       <ServicesGrid />
+      <Affiliations />
       <Testimonials />
       <FindUs />
     </>
