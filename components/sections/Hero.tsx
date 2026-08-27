@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { RequisitionCard } from "./RequisitionCard";
 import { PanelChip } from "./PanelChip";
+import { TestFinder } from "./TestFinder";
 
 export function Hero() {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-16">
+    <section className="bg-texture mx-auto max-w-6xl px-6 py-16">
       <div className="grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-start">
         <div>
           <p className="font-mono-panel text-xs uppercase tracking-wide text-clear">
@@ -35,13 +35,7 @@ export function Hero() {
         </div>
 
         <div>
-          <RequisitionCard
-            reqNumber="10847"
-            status="Walk-in"
-            testName="10-panel urine screen"
-            location="Brighton clinic · 380 Washington St"
-            turnaround="~24 hrs"
-          />
+          <TestFinder />
         </div>
       </div>
 
