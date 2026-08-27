@@ -7,22 +7,36 @@ export type NavItem = {
 export const siteConfig = {
   name: "Testology, Inc.",
   tagline: "Certified drug testing and health screening in Brighton, MA",
+  url: "https://www.testology.org",
 
   contact: {
     tollFree: "877-211-4447",
     direct: "857-384-9194",
+    emergencyDispatch: "617-777-3031",
     examsEmail: "exams@testology.org",
+    dispatchEmail: "dispatch@testologylabs.com",
+    wellnessEmail: "wellness@testologylabs.com",
   },
 
   location: {
     name: "Brighton Clinic",
     line1: "380 Washington St., Suite 202, 2nd Floor",
     line2: "Brighton, MA 02135",
+    transit:
+      "T 'B' line: Washington St. & Chiswick Rd. station. Buses 65 & 57 stop in front of clinic.",
   },
 
   hours: {
     weekday: "Monday–Friday: 9AM–6PM",
     saturday: "Closed (July & August 2026)",
+    lastWalkIn:
+      "5:30 PM last walk-in for urine drug test. All other services are by appointment only.",
+  },
+
+  social: {
+    instagram: "https://www.instagram.com/testology.inc/",
+    facebook: "https://www.facebook.com/Testology.org",
+    linkedin: "https://www.linkedin.com/in/testology-inc/",
   },
 
   // Primary nav — visible directly in the header
