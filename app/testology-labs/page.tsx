@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
-
 import type { Metadata } from "next";
+import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
+import { Reveal } from "@/components/ui/Reveal";
+import { Accordion } from "@/components/ui/Accordion";
 
 export const metadata: Metadata = {
   title: "Testology Labs — Wellness Panels | Testology, Inc.",
@@ -27,6 +28,24 @@ const offerings = [
   },
 ];
 
+const faqs = [
+  {
+    question: "Do you prescribe or provide peptides or supplements?",
+    answer:
+      "No — we perform the lab testing and monitoring. Any protocol, prescription, or supplement decision should come from your treating provider; we don't recommend or dispense treatments ourselves.",
+  },
+  {
+    question: "How often should monitoring labs be repeated?",
+    answer:
+      "This depends on the specific protocol and your provider's guidance. As a general pattern, a baseline panel followed by a check at 8–12 weeks is common, but your provider should set the actual schedule.",
+  },
+  {
+    question: "Will my results be reviewed by a doctor?",
+    answer:
+      "We provide the lab results directly to you. If you're working with a provider on a protocol, you should share your results with them for interpretation and next steps.",
+  },
+];
+
 export default function TestologyLabsPage() {
   return (
     <>
@@ -39,13 +58,27 @@ export default function TestologyLabsPage() {
       <section className="mx-auto max-w-6xl px-6 py-14">
         <h2 className="mb-6 font-display text-xl font-medium text-ink">What we offer</h2>
         <div className="grid gap-6 md:grid-cols-3">
-          {offerings.map((offering) => (
-            <div key={offering.title} className="rounded-lg border border-slate/20 bg-white p-5">
-              <h3 className="mb-1.5 font-display text-base font-medium text-ink">{offering.title}</h3>
-              <p className="text-sm text-slate">{offering.description}</p>
-            </div>
+          {offerings.map((offering, index) => (
+            <Reveal key={offering.title} delay={index * 80}>
+              <div className="rounded-lg border border-slate/20 bg-white p-5">
+                <h3 className="mb-1.5 font-display text-base font-medium text-ink">
+                  {offering.title}
+                </h3>
+                <p className="text-sm text-slate">{offering.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-14">
+        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+          Frequently asked questions
+        </h2>
+        <p className="mb-6 max-w-xl text-sm text-slate">
+          How our lab monitoring role fits alongside your provider's guidance.
+        </p>
+        <Accordion items={faqs} />
       </section>
 
       <section className="border-t border-slate/20 bg-white">

@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
-
 import type { Metadata } from "next";
+import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
+import { Reveal } from "@/components/ui/Reveal";
+import { Accordion } from "@/components/ui/Accordion";
 
 export const metadata: Metadata = {
   title: "Vaccines | Testology, Inc.",
@@ -28,6 +29,24 @@ const vaccines = [
   },
 ];
 
+const faqs = [
+  {
+    question: "Do I need an appointment for a vaccine?",
+    answer:
+      "Flu vaccines are typically available as a walk-in. Other vaccines are best scheduled in advance so we can confirm dose timing and availability.",
+  },
+  {
+    question: "Will I receive a vaccination record?",
+    answer:
+      "Yes — you'll receive documentation of the vaccine administered, which you can provide to your employer, school, or personal medical records.",
+  },
+  {
+    question: "Do you bill insurance for vaccines?",
+    answer:
+      "Coverage varies by vaccine and insurance plan. Contact us with your insurance details ahead of your visit and we'll confirm what applies to your situation.",
+  },
+];
+
 export default function VaccinesPage() {
   return (
     <>
@@ -40,13 +59,25 @@ export default function VaccinesPage() {
       <section className="mx-auto max-w-6xl px-6 py-14">
         <h2 className="mb-6 font-display text-xl font-medium text-ink">Vaccines we administer</h2>
         <div className="grid gap-6 md:grid-cols-2">
-          {vaccines.map((vaccine) => (
-            <div key={vaccine.title} className="rounded-lg border border-slate/20 bg-white p-5">
-              <h3 className="mb-1.5 font-display text-base font-medium text-ink">{vaccine.title}</h3>
-              <p className="text-sm text-slate">{vaccine.description}</p>
-            </div>
+          {vaccines.map((vaccine, index) => (
+            <Reveal key={vaccine.title} delay={index * 80}>
+              <div className="rounded-lg border border-slate/20 bg-white p-5">
+                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{vaccine.title}</h3>
+                <p className="text-sm text-slate">{vaccine.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-14">
+        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+          Frequently asked questions
+        </h2>
+        <p className="mb-6 max-w-xl text-sm text-slate">
+          What to know before scheduling a vaccine visit.
+        </p>
+        <Accordion items={faqs} />
       </section>
 
       <section className="border-t border-slate/20 bg-white">

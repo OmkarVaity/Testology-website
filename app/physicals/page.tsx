@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
-
-
 import type { Metadata } from "next";
+import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
+import { Reveal } from "@/components/ui/Reveal";
+import { Accordion } from "@/components/ui/Accordion";
 
 export const metadata: Metadata = {
   title: "DOT & Employment Physicals | Testology, Inc.",
@@ -31,6 +31,38 @@ const physicalTypes = [
   },
 ];
 
+const dotPhysicalComponents = [
+  "Medical history review",
+  "Vision test",
+  "Hearing test",
+  "Blood pressure & pulse check",
+  "Sleep apnea risk evaluation",
+  "Urine test",
+];
+
+const faqs = [
+  {
+    question: "What does a DOT physical actually check?",
+    answer:
+      "A DOT physical includes a medical history review, vision and hearing tests, a blood pressure and pulse check, a sleep apnea risk evaluation, and a urine test — all performed by a medical examiner listed on the FMCSA National Registry.",
+  },
+  {
+    question: "How long is a DOT medical certificate valid for?",
+    answer:
+      "Typically up to 24 months, though your examiner may issue a shorter certification period if a monitored condition requires more frequent follow-up.",
+  },
+  {
+    question: "What should I bring to a DOT physical?",
+    answer:
+      "Bring a photo ID, a list of current medications, and glasses or hearing aids if you use them. If you have a condition like diabetes or sleep apnea, bring related medical documentation.",
+  },
+  {
+    question: "Can I fail a DOT physical?",
+    answer:
+      "You can be certified, certified with restrictions, or found temporarily not qualified pending further evaluation of a specific condition — an outright permanent disqualification is uncommon and usually tied to a specific federal standard.",
+  },
+];
+
 export default function PhysicalsPage() {
   return (
     <>
@@ -43,13 +75,39 @@ export default function PhysicalsPage() {
       <section className="mx-auto max-w-6xl px-6 py-14">
         <h2 className="mb-6 font-display text-xl font-medium text-ink">Types of physicals we perform</h2>
         <div className="grid gap-6 md:grid-cols-2">
-          {physicalTypes.map((type) => (
-            <div key={type.title} className="rounded-lg border border-slate/20 bg-white p-5">
-              <h3 className="mb-1.5 font-display text-base font-medium text-ink">{type.title}</h3>
-              <p className="text-sm text-slate">{type.description}</p>
-            </div>
+          {physicalTypes.map((type, index) => (
+            <Reveal key={type.title} delay={index * 80}>
+              <div className="rounded-lg border border-slate/20 bg-white p-5">
+                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{type.title}</h3>
+                <p className="text-sm text-slate">{type.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-14">
+        <h2 className="mb-4 font-display text-xl font-medium text-ink">What a DOT physical includes</h2>
+        <div className="flex flex-wrap gap-2">
+          {dotPhysicalComponents.map((component) => (
+            <span
+              key={component}
+              className="rounded-md bg-ink/5 px-2.5 py-1.5 font-mono-panel text-[11px] uppercase tracking-wide text-ink"
+            >
+              {component}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-14">
+        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+          Frequently asked questions
+        </h2>
+        <p className="mb-6 max-w-xl text-sm text-slate">
+          What to know and what to bring before your physical.
+        </p>
+        <Accordion items={faqs} />
       </section>
 
       <section className="border-t border-slate/20 bg-white">
