@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import type { Metadata } from "next";
-
+import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
+import { Reveal } from "@/components/ui/Reveal";
+import { Accordion } from "@/components/ui/Accordion";
 
 export const metadata: Metadata = {
   title: "Oral Fluid Testing | Testology, Inc.",
@@ -26,6 +27,24 @@ const details = [
   },
 ];
 
+const faqs = [
+  {
+    question: "How far back can oral fluid testing detect use?",
+    answer:
+      "Oral fluid generally reflects use within the past 24–48 hours, making it well suited to recent-use situations rather than a longer look-back.",
+  },
+  {
+    question: "Is the collection process private?",
+    answer:
+      "The swab collection is directly observed by a trained collector, but doesn't require removing clothing or the same privacy setup a urine collection needs.",
+  },
+  {
+    question: "Can oral fluid results be used for DOT compliance?",
+    answer:
+      "Oral fluid is an approved DOT specimen type once fully implemented by a given operating administration — ask us about the current status for your specific program, since implementation has been rolling out gradually.",
+  },
+];
+
 export default function OralFluidTestingPage() {
   return (
     <>
@@ -38,13 +57,25 @@ export default function OralFluidTestingPage() {
       <section className="mx-auto max-w-6xl px-6 py-14">
         <h2 className="mb-6 font-display text-xl font-medium text-ink">Why oral fluid</h2>
         <div className="grid gap-6 md:grid-cols-3">
-          {details.map((detail) => (
-            <div key={detail.title} className="rounded-lg border border-slate/20 bg-white p-5">
-              <h3 className="mb-1.5 font-display text-base font-medium text-ink">{detail.title}</h3>
-              <p className="text-sm text-slate">{detail.description}</p>
-            </div>
+          {details.map((detail, index) => (
+            <Reveal key={detail.title} delay={index * 80}>
+              <div className="rounded-lg border border-slate/20 bg-white p-5">
+                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{detail.title}</h3>
+                <p className="text-sm text-slate">{detail.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-14">
+        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+          Frequently asked questions
+        </h2>
+        <p className="mb-6 max-w-xl text-sm text-slate">
+          What to know about the oral fluid collection process and its detection window.
+        </p>
+        <Accordion items={faqs} />
       </section>
 
       <section className="border-t border-slate/20 bg-white">

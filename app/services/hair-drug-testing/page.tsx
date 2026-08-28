@@ -1,7 +1,9 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import { PanelChip } from "@/components/sections/PanelChip";
-import type { Metadata } from "next";
+import { Reveal } from "@/components/ui/Reveal";
+import { Accordion } from "@/components/ui/Accordion";
 
 export const metadata: Metadata = {
   title: "Hair Drug Testing | Testology, Inc.",
@@ -27,6 +29,24 @@ const details = [
   },
 ];
 
+const faqs = [
+  {
+    question: "How much hair is needed for the test?",
+    answer:
+      "A sample about the thickness of a pencil and 1.5 inches long, typically cut close to the scalp from the back of the head, is enough for standard analysis.",
+  },
+  {
+    question: "What if someone doesn't have enough head hair?",
+    answer:
+      "Body hair (such as from the arm, leg, or chest) can generally be used as an alternative, though it reflects a longer and less precisely defined detection window than head hair.",
+  },
+  {
+    question: "Can hair dye or bleach affect the result?",
+    answer:
+      "Cosmetic treatments can affect the exterior of the hair shaft but generally don't eliminate detectable drug metabolites bound inside the hair — the lab accounts for this during analysis.",
+  },
+];
+
 export default function HairDrugTestingPage() {
   return (
     <>
@@ -39,11 +59,13 @@ export default function HairDrugTestingPage() {
       <section className="mx-auto max-w-6xl px-6 py-14">
         <h2 className="mb-6 font-display text-xl font-medium text-ink">What makes hair testing different</h2>
         <div className="grid gap-6 md:grid-cols-3">
-          {details.map((detail) => (
-            <div key={detail.title} className="rounded-lg border border-slate/20 bg-white p-5">
-              <h3 className="mb-1.5 font-display text-base font-medium text-ink">{detail.title}</h3>
-              <p className="text-sm text-slate">{detail.description}</p>
-            </div>
+          {details.map((detail, index) => (
+            <Reveal key={detail.title} delay={index * 80}>
+              <div className="rounded-lg border border-slate/20 bg-white p-5">
+                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{detail.title}</h3>
+                <p className="text-sm text-slate">{detail.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -55,6 +77,16 @@ export default function HairDrugTestingPage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-6xl px-6 pb-14">
+        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+          Frequently asked questions
+        </h2>
+        <p className="mb-6 max-w-xl text-sm text-slate">
+          Practical questions about how the hair sample is collected and analyzed.
+        </p>
+        <Accordion items={faqs} />
+      </section>
+
       <section className="border-t border-slate/20 bg-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <h2 className="mb-2 font-display text-xl font-medium text-ink">
@@ -62,7 +94,7 @@ export default function HairDrugTestingPage() {
           </h2>
           <p className="mb-6 max-w-xl text-sm text-slate">
             We can help you decide whether hair, oral fluid, or urine testing best matches what
-            you're screening for.
+            you&apos;re screening for.
           </p>
           <Link
             href="/contact"
