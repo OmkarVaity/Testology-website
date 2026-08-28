@@ -1,26 +1,25 @@
 import Link from "next/link";
-import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
-
 import type { Metadata } from "next";
+import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
+import { Reveal } from "@/components/ui/Reveal";
+import { Accordion } from "@/components/ui/Accordion";
 
 export const metadata: Metadata = {
   title: "Specialty Blood Panels | Testology, Inc.",
   description:
-    "Hormone, cardiac risk, longevity, and comprehensive wellness blood panels, no physician referral required.",
+    "Initial Male and Female Panels, plus comprehensive wellness and food sensitivity blood panels, no physician referral required.",
 };
 
 const panels = [
   {
-    title: "Hormone panel",
-    description: "Thyroid, testosterone, estrogen, and cortisol markers for a broader hormonal health picture.",
+    title: "Initial male panel",
+    description:
+      "Metabolic function and blood cell health, plus testosterone, thyroid hormones, SHBG, and estradiol. Includes PSA for prostate health, a lipid panel for cardiovascular risk, and IGF-1.",
   },
   {
-    title: "Cardiac risk panel",
-    description: "Lipid profile, hs-CRP, and related markers used to assess cardiovascular risk factors.",
-  },
-  {
-    title: "Longevity panel",
-    description: "A wider set of biomarkers tracked over time to monitor aging-related health trends.",
+    title: "Initial female panel",
+    description:
+      "Metabolic function and blood cell health, plus estradiol, testosterone, and thyroid hormones. Includes a lipid panel for cardiovascular risk assessment.",
   },
   {
     title: "Comprehensive wellness panel",
@@ -30,9 +29,23 @@ const panels = [
     title: "Food & allergy sensitivity panel",
     description: "Screens reactivity across a wide range of common food and environmental allergens.",
   },
+];
+
+const faqs = [
   {
-    title: "Cancer screening panel",
-    description: "Select tumor marker tests used as part of a broader early-detection screening approach.",
+    question: "Do I need a physician referral for these panels?",
+    answer:
+      "No — most of our specialty wellness panels can be requested directly without a physician's authorization. Anything requiring diagnostic follow-up is best discussed with your doctor afterward.",
+  },
+  {
+    question: "How is the Initial Male or Female Panel different from a routine physical's bloodwork?",
+    answer:
+      "These panels go beyond a standard physical's basic labs to include hormone markers like testosterone, estradiol, and SHBG — useful for anyone tracking hormonal health specifically, not just general wellness.",
+  },
+  {
+    question: "How will I receive my results?",
+    answer:
+      "Results are delivered securely once processed. In-house markers are often available same-day, while send-out lab markers typically take a few business days.",
   },
 ];
 
@@ -47,14 +60,26 @@ export default function SpecialtyPanelsPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-14">
         <h2 className="mb-6 font-display text-xl font-medium text-ink">Available panels</h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          {panels.map((panel) => (
-            <div key={panel.title} className="rounded-lg border border-slate/20 bg-white p-5">
-              <h3 className="mb-1.5 font-display text-base font-medium text-ink">{panel.title}</h3>
-              <p className="text-sm text-slate">{panel.description}</p>
-            </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          {panels.map((panel, index) => (
+            <Reveal key={panel.title} delay={index * 80}>
+              <div className="rounded-lg border border-slate/20 bg-white p-5">
+                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{panel.title}</h3>
+                <p className="text-sm text-slate">{panel.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-14">
+        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+          Frequently asked questions
+        </h2>
+        <p className="mb-6 max-w-xl text-sm text-slate">
+          What to know before requesting a wellness panel on your own.
+        </p>
+        <Accordion items={faqs} />
       </section>
 
       <section className="border-t border-slate/20 bg-white">
