@@ -1,12 +1,14 @@
+import Image from "next/image";
+
 const affiliations = [
-  "SAPAA",
-  "NDASA",
-  "SAMHSA",
-  "Abbott",
-  "FormFox",
-  "eScreen",
-  "ExamOne",
-  "Quest Diagnostics",
+  { name: "SAMHSA", file: "samhsa.png" },
+  { name: "NDASA", file: "ndasa.png" },
+  { name: "SAPAA", file: "sapaa.png" },
+  { name: "Abbott", file: "abbott.png" },
+  { name: "FormFox", file: "formfox.png" },
+  { name: "eScreen", file: "escreen.png" },
+  { name: "ExamOne", file: "examone.png" },
+  { name: "Quest Diagnostics", file: "quest.png" },
 ];
 
 export function Affiliations() {
@@ -22,15 +24,18 @@ export function Affiliations() {
         </p>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {affiliations.map((name) => (
+          {affiliations.map((item) => (
             <div
-              key={name}
-              className="flex h-16 items-center justify-center rounded-md border border-dashed border-slate/30 bg-ink/5 px-3"
+              key={item.name}
+              className="flex h-20 items-center justify-center rounded-md border border-slate/20 bg-white p-3"
             >
-              {/* TODO: replace with <img src="/images/logos/[name].svg" /> once logo files are available */}
-              <span className="text-center font-mono-panel text-[10px] uppercase tracking-wide text-slate">
-                {name}
-              </span>
+              <Image
+                src={`/images/logos/${item.file}`}
+                alt={item.name}
+                width={140}
+                height={60}
+                className="h-auto max-h-12 w-auto max-w-full object-contain"
+              />
             </div>
           ))}
         </div>

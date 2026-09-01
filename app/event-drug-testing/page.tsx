@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
-
 import type { Metadata } from "next";
-
+import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
+import { Reveal } from "@/components/ui/Reveal";
+import { Accordion } from "@/components/ui/Accordion";
 
 export const metadata: Metadata = {
   title: "Event Drug Testing | Testology, Inc.",
@@ -14,7 +14,7 @@ const details = [
   {
     title: "Group & bulk testing",
     description:
-      "On-site collection for large groups at once — sports leagues, competitions, or one-time compliance events.",
+      "On-site collection for large groups at once — sports leagues, competitions, or one-time compliance events. We regularly handle 50 or more employees at a single event.",
   },
   {
     title: "Fast turnaround for event timelines",
@@ -25,6 +25,24 @@ const details = [
     title: "Custom panel selection",
     description:
       "Choose the specific substances or panel type relevant to your event's governing body or policy.",
+  },
+];
+
+const faqs = [
+  {
+    question: "What's the minimum or maximum group size you handle?",
+    answer:
+      "There's no strict minimum, and we regularly handle events of 50 or more participants. Let us know your expected headcount when scheduling so we can bring the right amount of equipment and staff.",
+  },
+  {
+    question: "How much lead time do you need to schedule an event?",
+    answer:
+      "The more notice the better, especially for larger groups, but we can often accommodate shorter-notice requests — reach out with your date and headcount and we'll confirm availability.",
+  },
+  {
+    question: "Can results be provided the same day as the event?",
+    answer:
+      "Rapid screening options give same-day results for most panels. Any non-negative finding is sent to a certified lab for confirmation, which takes longer.",
   },
 ];
 
@@ -40,13 +58,25 @@ export default function EventDrugTestingPage() {
       <section className="mx-auto max-w-6xl px-6 py-14">
         <h2 className="mb-6 font-display text-xl font-medium text-ink">What we handle</h2>
         <div className="grid gap-6 md:grid-cols-3">
-          {details.map((detail) => (
-            <div key={detail.title} className="rounded-lg border border-slate/20 bg-white p-5">
-              <h3 className="mb-1.5 font-display text-base font-medium text-ink">{detail.title}</h3>
-              <p className="text-sm text-slate">{detail.description}</p>
-            </div>
+          {details.map((detail, index) => (
+            <Reveal key={detail.title} delay={index * 80}>
+              <div className="rounded-lg border border-slate/20 bg-white p-5">
+                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{detail.title}</h3>
+                <p className="text-sm text-slate">{detail.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-14">
+        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+          Frequently asked questions
+        </h2>
+        <p className="mb-6 max-w-xl text-sm text-slate">
+          What to know before booking group testing for your event.
+        </p>
+        <Accordion items={faqs} />
       </section>
 
       <section className="border-t border-slate/20 bg-white">

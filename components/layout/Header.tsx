@@ -1,138 +1,235 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Phone, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/content/site-config";
 
 export function Header() {
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-ink">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
-        <Link href="/" className="font-display text-lg font-medium text-bone">
-          Testology
-        </Link>
+    <>
+      <div className="bg-primary-600 px-4 py-2 text-center text-sm font-medium text-white">
+        <span className="hidden sm:inline">
+          Quest Preferred Site &middot; eScreen Top Site &middot; LabCorp Collection Site
+        </span>
+        <span className="sm:hidden">Quest Preferred &middot; eScreen Top &middot; LabCorp Site</span>
+      </div>
 
-        <nav className="hidden items-center gap-5 text-sm text-bone/70 lg:flex">
-          {siteConfig.primaryNav.map((item) =>
-            item.children ? (
-              <div
-                key={item.href}
-                className="relative"
-                onMouseEnter={() => setOpenMenu(item.label)}
-                onMouseLeave={() => setOpenMenu(null)}
-              >
-                <Link href={item.href} className="transition hover:text-bone">
-                  {item.label}
-                </Link>
-                {openMenu === item.label && (
-                  <div className="absolute left-0 top-full min-w-52 rounded-md border border-bone/10 bg-ink py-2 shadow-lg">
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className="block px-4 py-2 text-sm text-bone/70 transition hover:bg-bone/5 hover:text-bone"
+      <motion.header
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+          scrolled
+            ? "border-b border-slate-200/60 bg-white/90 shadow-lg backdrop-blur-xl"
+            : "bg-white/60 backdrop-blur-md"
+        }`}
+      >
+        <div className="container-wide flex h-16 items-center justify-between lg:h-20">
+          <Link href="/" className="group flex items-center gap-2">
+            <div className="relative">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 shadow-lg shadow-primary-500/30 transition-transform group-hover:scale-105 lg:h-11 lg:w-11">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-6 w-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M10 2v7.5a2.5 2.5 0 0 0 5 0V2" />
+                  <path d="M12 2v20" />
+                  <path d="M8.5 2h7" />
+                </svg>
+              </div>
+              <span className="absolute -right-1 -top-1 h-3 w-3 animate-pulse-soft rounded-full border-2 border-white bg-green-500" />
+            </div>
+            <div className="flex flex-col leading-none">
+              <span className="font-display-bolt text-lg font-bold text-slate-900 lg:text-xl">
+                Testology
+              </span>
+              <span className="text-[10px] font-medium tracking-wide text-slate-500 lg:text-xs">
+                ELEVATE TO EVALUATE
+              </span>
+            </div>
+          </Link>
+
+          <nav className="hidden items-center gap-7 lg:flex">
+            {siteConfig.primaryNav.map((link) =>
+              link.children ? (
+                <div
+                  key={link.label}
+                  className="relative"
+                  onMouseEnter={() => setOpenMenu(link.label)}
+                  onMouseLeave={() => setOpenMenu(null)}
+                >
+                  <Link href={link.href} className="nav-link flex items-center gap-1 py-2">
+                    {link.label}
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  </Link>
+                  <AnimatePresence>
+                    {openMenu === link.label && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute left-0 top-full mt-1 w-64 rounded-xl border border-slate-100 bg-white p-2 shadow-2xl"
                       >
-                        {child.label}
+                        {link.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-primary-50 hover:text-primary-600"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Link key={link.href} href={link.href} className="nav-link py-2">
+                  {link.label}
+                </Link>
+              ),
+            )}
+
+            <div
+              className="relative"
+              onMouseEnter={() => setOpenMenu("more")}
+              onMouseLeave={() => setOpenMenu(null)}
+            >
+              <button className="nav-link flex items-center gap-1 py-2">
+                More
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+              <AnimatePresence>
+                {openMenu === "more" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 top-full mt-1 w-64 rounded-xl border border-slate-100 bg-white p-2 shadow-2xl"
+                  >
+                    {siteConfig.moreNav.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-primary-50 hover:text-primary-600"
+                      >
+                        {item.label}
                       </Link>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
-              </div>
-            ) : (
-              <Link key={item.href} href={item.href} className="transition hover:text-bone">
-                {item.label}
-              </Link>
-            ),
-          )}
+              </AnimatePresence>
+            </div>
+          </nav>
 
-          <div
-            className="relative"
-            onMouseEnter={() => setOpenMenu("more")}
-            onMouseLeave={() => setOpenMenu(null)}
-          >
-            <button className="transition hover:text-bone">More</button>
-            {openMenu === "more" && (
-              <div className="absolute right-0 top-full min-w-56 rounded-md border border-bone/10 bg-ink py-2 shadow-lg">
-                {siteConfig.moreNav.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="block px-4 py-2 text-sm text-bone/70 transition hover:bg-bone/5 hover:text-bone"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            )}
+          <div className="hidden items-center gap-3 lg:flex">
+            <a
+              href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`}
+              className="flex items-center gap-2 text-sm font-semibold text-slate-700 transition-colors hover:text-primary-600"
+            >
+              <Phone className="h-4 w-4" />
+              {siteConfig.contact.tollFree}
+            </a>
+            <Link href="/contact">
+              <Button className="rounded-xl bg-primary-600 px-6 shadow-lg shadow-primary-500/30 hover:bg-primary-700">
+                Book Appointment
+              </Button>
+            </Link>
           </div>
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <a
-            href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`}
-            className="rounded-md bg-signal px-3 py-1.5 text-xs font-medium text-ink"
-          >
-            Call now
-          </a>
 
           <button
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            onClick={() => setMobileOpen((open) => !open)}
-            className="text-bone lg:hidden"
+            className="p-2 text-slate-700 lg:hidden"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
-      </div>
 
-      {mobileOpen && (
-        <div className="border-t border-bone/10 bg-ink px-6 py-4 lg:hidden">
-          <nav className="flex flex-col gap-1">
-            {siteConfig.primaryNav.map((item) => (
-              <div key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block py-2 text-sm text-bone/80"
-                >
-                  {item.label}
-                </Link>
-                {item.children && (
-                  <div className="ml-3 flex flex-col gap-1 border-l border-bone/10 pl-3">
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        onClick={() => setMobileOpen(false)}
-                        className="py-1.5 text-sm text-bone/60"
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden border-t border-slate-100 bg-white lg:hidden"
+            >
+              <div className="container-wide flex flex-col gap-1 py-4">
+                {siteConfig.primaryNav.map((link) => (
+                  <div key={link.href}>
+                    <Link
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-primary-50 hover:text-primary-600"
+                    >
+                      {link.label}
+                    </Link>
+                    {link.children && (
+                      <div className="ml-3 flex flex-col border-l border-slate-100 pl-3">
+                        {link.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={() => setMobileOpen(false)}
+                            className="rounded-lg px-4 py-2 text-sm text-slate-500 hover:text-primary-600"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
+                {siteConfig.moreNav.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block rounded-lg px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-primary-50 hover:text-primary-600"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <div className="mt-2 flex flex-col gap-3 border-t border-slate-100 pt-3">
+                  <a
+                    href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`}
+                    className="flex items-center gap-2 px-4 text-sm font-semibold text-slate-700"
+                  >
+                    <Phone className="h-4 w-4" />
+                    {siteConfig.contact.tollFree}
+                  </a>
+                  <Link href="/contact" onClick={() => setMobileOpen(false)}>
+                    <Button className="w-full rounded-xl bg-primary-600 hover:bg-primary-700">
+                      Book Appointment
+                    </Button>
+                  </Link>
+                </div>
               </div>
-            ))}
-
-            <div className="mt-2 border-t border-bone/10 pt-2">
-              {siteConfig.moreNav.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block py-2 text-sm text-bone/60"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </nav>
-        </div>
-      )}
-    </header>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.header>
+    </>
   );
 }

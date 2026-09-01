@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
-
 import type { Metadata } from "next";
-
+import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
+import { Reveal } from "@/components/ui/Reveal";
+import { Accordion } from "@/components/ui/Accordion";
 
 export const metadata: Metadata = {
   title: "Paramedical Services | Testology, Inc.",
@@ -12,17 +12,36 @@ export const metadata: Metadata = {
 
 const services = [
   {
-    title: "Insurance exam collection",
+    title: "Vitals & specimen collection",
     description:
-      "Vitals, blood draw, and specimen collection performed on behalf of life and health insurance underwriters.",
+      "Height, weight, blood pressure, and pulse, along with blood, urine, and oral fluid collection depending on the insurer's underwriting guidelines.",
   },
   {
-    title: "EKG",
-    description: "Resting electrocardiogram readings requested as part of certain underwriting exams.",
+    title: "EKG & X-ray",
+    description:
+      "Administered when required by the insurance company's underwriting criteria for the applicant's age or coverage amount.",
   },
   {
-    title: "Height, weight & vitals",
-    description: "Standard measurements recorded as part of most paramedical exam packages.",
+    title: "Medical history interview",
+    description: "Completed at the time of your exam if requested by the insurance company.",
+  },
+];
+
+const faqs = [
+  {
+    question: "Will I learn my results at the exam?",
+    answer:
+      "No — results and any additional requirements are forwarded directly to the requesting insurance company. We don't have visibility into the underwriting decision itself.",
+  },
+  {
+    question: "How long does the exam take?",
+    answer:
+      "Typically 15 to 30 minutes, though this varies depending on which services your specific insurance company requires.",
+  },
+  {
+    question: "Is anything about the exam confidential from my insurer's decision?",
+    answer:
+      "All information collected during the exam is confidential and used only for underwriting purposes. Our examiners don't make or offer any opinion on insurability — that decision rests entirely with the insurance company's underwriting department.",
   },
 ];
 
@@ -36,15 +55,27 @@ export default function ParamedicalServicesPage() {
       />
 
       <section className="mx-auto max-w-6xl px-6 py-14">
-        <h2 className="mb-6 font-display text-xl font-medium text-ink">What's included</h2>
+        <h2 className="mb-6 font-display text-xl font-medium text-ink">What&apos;s included</h2>
         <div className="grid gap-6 md:grid-cols-3">
-          {services.map((service) => (
-            <div key={service.title} className="rounded-lg border border-slate/20 bg-white p-5">
-              <h3 className="mb-1.5 font-display text-base font-medium text-ink">{service.title}</h3>
-              <p className="text-sm text-slate">{service.description}</p>
-            </div>
+          {services.map((service, index) => (
+            <Reveal key={service.title} delay={index * 80}>
+              <div className="rounded-lg border border-slate/20 bg-white p-5">
+                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{service.title}</h3>
+                <p className="text-sm text-slate">{service.description}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-14">
+        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+          Frequently asked questions
+        </h2>
+        <p className="mb-6 max-w-xl text-sm text-slate">
+          What to expect during and after a paramedical exam.
+        </p>
+        <Accordion items={faqs} />
       </section>
 
       <section className="border-t border-slate/20 bg-white">
