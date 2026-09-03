@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 type Scenario = {
   label: string;
@@ -42,20 +43,20 @@ export function TestFinder() {
   const result = selected ? scenarios[selected] : null;
 
   return (
-    <div className="rounded-lg border border-slate/20 bg-white p-4">
-      <p className="mb-3 font-mono-panel text-[10px] uppercase tracking-wide text-slate">
+    <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <p className="font-display-bolt mb-3 text-sm font-semibold text-slate-900">
         Find your test
       </p>
 
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-2">
         {Object.entries(scenarios).map(([key, scenario]) => (
           <button
             key={key}
             onClick={() => setSelected(key)}
-            className={`rounded-md px-2.5 py-1.5 text-xs font-medium transition ${
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
               selected === key
-                ? "bg-ink text-bone"
-                : "bg-ink/5 text-ink hover:bg-ink/10"
+                ? "bg-primary-600 text-white"
+                : "bg-primary-50 text-primary-700 hover:bg-primary-100"
             }`}
           >
             {scenario.label}
@@ -64,17 +65,18 @@ export function TestFinder() {
       </div>
 
       {result && (
-        <div className="mt-4 border-t border-dashed border-slate/30 pt-3">
-          <p className="text-sm font-medium text-ink">{result.panel}</p>
-          <div className="mt-1.5 flex items-center justify-between font-mono-panel text-[11px] text-slate">
+        <div className="mt-4 border-t border-slate-100 pt-4">
+          <p className="text-sm font-semibold text-slate-900">{result.panel}</p>
+          <div className="mt-1.5 flex items-center justify-between text-xs text-slate-500">
             <span>Typical turnaround</span>
-            <span className="text-clear">{result.turnaround}</span>
+            <span className="font-semibold text-primary-600">{result.turnaround}</span>
           </div>
           <Link
             href={result.href}
-            className="mt-3 inline-block text-sm font-medium text-clear hover:underline"
+            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 transition hover:text-primary-700"
           >
-            View this test &rarr;
+            View this test
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       )}
