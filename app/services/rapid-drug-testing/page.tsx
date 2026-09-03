@@ -58,21 +58,27 @@ export default function RapidDrugTestingPage() {
       <ServicePageHeader
         eyebrow="Instrument-read screening"
         title="Rapid drug testing"
+        tagline="Results in as little as 15 minutes"
         intro="Our eCup+ system pairs a self-contained collection device with an instrument-read eReader — giving you a fast, consistent result without a person interpreting a test strip by eye."
+        image="https://images.pexels.com/photos/8442376/pexels-photo-8442376.jpeg?auto=compress&cs=tinysrgb&w=1200"
+        iconName="FlaskConical"
+        color="from-cyan-500 to-blue-600"
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-14">
-        <div className="grid gap-10 md:grid-cols-[1.3fr_1fr]">
+      <section className="container-wide py-14">
+        <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
           <div>
-            <h2 className="mb-6 font-display text-xl font-medium text-ink">What makes it different</h2>
+            <h2 className="font-display-bolt mb-6 text-xl font-semibold text-slate-900">
+              What makes it different
+            </h2>
             <div className="space-y-6">
               {details.map((detail, index) => (
                 <Reveal key={detail.title} delay={index * 80}>
                   <div>
-                    <h3 className="mb-1 font-display text-base font-medium text-ink">
+                    <h3 className="font-display-bolt mb-1 text-base font-semibold text-slate-900">
                       {detail.title}
                     </h3>
-                    <p className="text-sm text-slate">{detail.description}</p>
+                    <p className="text-sm text-slate-500">{detail.description}</p>
                   </div>
                 </Reveal>
               ))}
@@ -80,33 +86,35 @@ export default function RapidDrugTestingPage() {
           </div>
 
           <Reveal delay={160}>
-            <TestFinder />
+            <div className="rounded-2xl border border-slate-100 bg-white p-2 shadow-sm">
+              <TestFinder />
+            </div>
           </Reveal>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-14">
-        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="container-wide pb-14">
+        <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
           Frequently asked questions
         </h2>
-        <p className="mb-6 max-w-xl text-sm text-slate">
+        <p className="mb-6 max-w-xl text-sm text-slate-500">
           What to know about how a rapid result differs from a final one.
         </p>
         <Accordion items={faqs} />
       </section>
 
-      <section className="border-t border-slate/20 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="border-t border-slate-100 bg-slate-50">
+        <div className="container-wide py-12">
+          <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
             Need it confirmed for compliance?
           </h2>
-          <p className="mb-6 max-w-xl text-sm text-slate">
+          <p className="mb-6 max-w-xl text-sm text-slate-500">
             If your result needs to hold up for DOT or employer compliance purposes, we can pair
             rapid screening with lab-confirmed follow-up in the same visit.
           </p>
           <Link
             href="/contact"
-            className="inline-block rounded-md bg-signal px-4 py-2.5 text-sm font-medium text-ink"
+            className="inline-block rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/30 transition hover:bg-primary-700"
           >
             Ask us
           </Link>

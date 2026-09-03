@@ -53,52 +53,62 @@ export default function HairDrugTestingPage() {
       <ServicePageHeader
         eyebrow="Long-window screening"
         title="Hair drug testing"
+        tagline="Visibility into patterns of use over months"
         intro="For roles or programs where a longer look-back matters more than same-day results, hair testing gives visibility into patterns of use over months, not days."
+        image="https://images.pexels.com/photos/8442376/pexels-photo-8442376.jpeg?auto=compress&cs=tinysrgb&w=1200"
+        iconName="Microscope"
+        color="from-violet-500 to-purple-600"
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-14">
-        <h2 className="mb-6 font-display text-xl font-medium text-ink">What makes hair testing different</h2>
+      <section className="container-wide py-14">
+        <h2 className="font-display-bolt mb-6 text-xl font-semibold text-slate-900">
+          What makes hair testing different
+        </h2>
         <div className="grid gap-6 md:grid-cols-3">
           {details.map((detail, index) => (
             <Reveal key={detail.title} delay={index * 80}>
-              <div className="rounded-lg border border-slate/20 bg-white p-5">
-                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{detail.title}</h3>
-                <p className="text-sm text-slate">{detail.description}</p>
+              <div className="card-hover rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                <h3 className="font-display-bolt mb-1.5 text-base font-semibold text-slate-900">
+                  {detail.title}
+                </h3>
+                <p className="text-sm text-slate-500">{detail.description}</p>
               </div>
             </Reveal>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-14">
-        <h2 className="mb-4 font-display text-xl font-medium text-ink">Available panel</h2>
+      <section className="container-wide pb-14">
+        <h2 className="font-display-bolt mb-4 text-xl font-semibold text-slate-900">
+          Available panel
+        </h2>
         <div className="flex flex-wrap gap-2">
           <PanelChip label="HAIR 5" variant="highlight" />
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-14">
-        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="container-wide pb-14">
+        <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
           Frequently asked questions
         </h2>
-        <p className="mb-6 max-w-xl text-sm text-slate">
+        <p className="mb-6 max-w-xl text-sm text-slate-500">
           Practical questions about how the hair sample is collected and analyzed.
         </p>
         <Accordion items={faqs} />
       </section>
 
-      <section className="border-t border-slate/20 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="border-t border-slate-100 bg-slate-50">
+        <div className="container-wide py-12">
+          <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
             Not sure if hair testing fits your policy?
           </h2>
-          <p className="mb-6 max-w-xl text-sm text-slate">
+          <p className="mb-6 max-w-xl text-sm text-slate-500">
             We can help you decide whether hair, oral fluid, or urine testing best matches what
             you&apos;re screening for.
           </p>
           <Link
             href="/contact"
-            className="inline-block rounded-md bg-signal px-4 py-2.5 text-sm font-medium text-ink"
+            className="inline-block rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/30 transition hover:bg-primary-700"
           >
             Ask us
           </Link>

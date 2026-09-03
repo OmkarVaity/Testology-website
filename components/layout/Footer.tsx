@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 import { siteConfig } from "@/content/site-config";
 
@@ -63,22 +64,14 @@ export function Footer() {
       <div className="container-wide relative z-10 py-16">
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-4">
-            <div className="mb-5 flex items-center gap-2">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 shadow-lg shadow-primary-500/30">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M10 2v7.5a2.5 2.5 0 0 0 5 0V2" />
-                  <path d="M12 2v20" />
-                  <path d="M8.5 2h7" />
-                </svg>
-              </div>
+            <div className="mb-5 flex items-center gap-2.5">
+              <Image
+                src="/logo.png"
+                alt="Testology, Inc. logo"
+                width={44}
+                height={44}
+                className="rounded-full"
+              />
               <div>
                 <p className="font-display-bolt text-xl font-bold">Testology</p>
                 <p className="text-xs text-slate-500">ELEVATE TO EVALUATE</p>

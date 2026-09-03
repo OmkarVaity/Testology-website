@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,25 +39,14 @@ export function Header() {
         }`}
       >
         <div className="container-wide flex h-16 items-center justify-between lg:h-20">
-          <Link href="/" className="group flex items-center gap-2">
-            <div className="relative">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 shadow-lg shadow-primary-500/30 transition-transform group-hover:scale-105 lg:h-11 lg:w-11">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-6 w-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M10 2v7.5a2.5 2.5 0 0 0 5 0V2" />
-                  <path d="M12 2v20" />
-                  <path d="M8.5 2h7" />
-                </svg>
-              </div>
-              <span className="absolute -right-1 -top-1 h-3 w-3 animate-pulse-soft rounded-full border-2 border-white bg-green-500" />
-            </div>
+          <Link href="/" className="group flex items-center gap-2.5">
+            <Image
+              src="/logo.png"
+              alt="Testology, Inc. logo"
+              width={48}
+              height={48}
+              className="rounded-full shadow-lg shadow-primary-500/20 transition-transform group-hover:scale-105"
+            />
             <div className="flex flex-col leading-none">
               <span className="font-display-bolt text-lg font-bold text-slate-900 lg:text-xl">
                 Testology

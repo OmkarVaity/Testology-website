@@ -7,7 +7,7 @@ import { Accordion } from "@/components/ui/Accordion";
 export const metadata: Metadata = {
   title: "Drug & Alcohol Testing | Testology, Inc.",
   description:
-    "Urine, oral fluid, hair, and rapid drug and alcohol testing in Brighton, MA, with proper chain-of-custody procedure.",
+    "Urine, oral fluid, hair, and rapid drug and alcohol testing in Brighton, MA, with eCCF chain-of-custody procedure.",
 };
 
 const collectionMethods = [
@@ -56,6 +56,11 @@ const faqs = [
     answer:
       "Your employer provides this directly once their account with us is set up — it's not something you need to source yourself. If you haven't received one and believe you should have, contact your employer's HR or safety team first.",
   },
+  {
+    question: "What is an eCCF?",
+    answer:
+      "eCCF stands for Electronic Chain of Custody Form — a paperless, secure digital form that tracks your specimen from collection through to the final result, reducing transcription errors compared to a traditional paper form.",
+  },
 ];
 
 export default function DrugAndAlcoholTestingPage() {
@@ -64,11 +69,15 @@ export default function DrugAndAlcoholTestingPage() {
       <ServicePageHeader
         eyebrow="Toxicology"
         title="Drug and alcohol testing"
-        intro="From a single walk-in screen to an ongoing workplace program, we run urine, oral fluid, hair, and breath alcohol testing under proper chain-of-custody procedure."
+        tagline="Urine, oral fluid, hair & breath alcohol testing"
+        intro="From a single walk-in screen to an ongoing workplace program, we run urine, oral fluid, hair, and breath alcohol testing under proper eCCF chain-of-custody procedure."
+        image="https://images.pexels.com/photos/8442376/pexels-photo-8442376.jpeg?auto=compress&cs=tinysrgb&w=1200"
+        iconName="FlaskConical"
+        color="from-teal-500 to-cyan-600"
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-14">
-        <h2 className="mb-6 font-display text-xl font-medium text-ink">
+      <section className="container-wide py-14">
+        <h2 className="font-display-bolt mb-6 text-xl font-semibold text-slate-900">
           Choose a collection method
         </h2>
         <div className="grid gap-6 md:grid-cols-2">
@@ -76,41 +85,41 @@ export default function DrugAndAlcoholTestingPage() {
             <Reveal key={method.href} delay={index * 80}>
               <Link
                 href={method.href}
-                className="block rounded-lg border border-slate/20 bg-white p-5 transition hover:border-slate/40 hover:shadow-sm"
+                className="card-hover block rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
               >
-                <h3 className="mb-1.5 font-display text-base font-medium text-ink">
+                <h3 className="font-display-bolt mb-1.5 text-base font-semibold text-slate-900">
                   {method.title}
                 </h3>
-                <p className="text-sm text-slate">{method.description}</p>
+                <p className="text-sm text-slate-500">{method.description}</p>
               </Link>
             </Reveal>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-14">
-        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="container-wide pb-14">
+        <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
           Frequently asked questions
         </h2>
-        <p className="mb-6 max-w-xl text-sm text-slate">
+        <p className="mb-6 max-w-xl text-sm text-slate-500">
           Practical answers for your first visit — what to bring, who pays, and how results are
           delivered.
         </p>
         <Accordion items={faqs} />
       </section>
 
-      <section className="border-t border-slate/20 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="border-t border-slate-100 bg-slate-50">
+        <div className="container-wide py-12">
+          <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
             Not sure which test you need?
           </h2>
-          <p className="mb-6 max-w-xl text-sm text-slate">
+          <p className="mb-6 max-w-xl text-sm text-slate-500">
             Tell us what you&apos;re testing for and why, and we&apos;ll point you to the right
             collection method and turnaround time.
           </p>
           <Link
             href="/contact"
-            className="inline-block rounded-md bg-signal px-4 py-2.5 text-sm font-medium text-ink"
+            className="inline-block rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/30 transition hover:bg-primary-700"
           >
             Ask us
           </Link>

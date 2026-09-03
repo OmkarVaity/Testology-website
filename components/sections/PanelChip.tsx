@@ -6,14 +6,10 @@ type PanelChipProps = {
 export function PanelChip({ label, variant = "default" }: PanelChipProps) {
   const styles =
     variant === "highlight"
-      ? "bg-clear/15 text-clear border border-clear/30"
-      : "bg-ink/5 text-ink";
+      ? "bg-primary-600 text-white border border-primary-600"
+      : "bg-primary-50 text-primary-700 border border-primary-100";
 
   return (
-    <span
-      className={`rounded-md px-2.5 py-1.5 font-mono-panel text-[11px] tracking-wide ${styles}`}
-    >
-      {label}
-    </span>
+    <span className={`rounded-full px-3 py-1.5 text-xs font-semibold ${styles}`}>{label}</span>
   );
 }
