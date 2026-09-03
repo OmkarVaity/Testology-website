@@ -53,45 +53,53 @@ export default function VaccinesPage() {
       <ServicePageHeader
         eyebrow="On-site administration"
         title="Vaccines"
+        tagline="Flu, Hepatitis B, Tdap & MMR"
         intro="When an immunity panel comes back negative, or a role simply requires proof of vaccination, we administer common vaccines on-site at the same clinic."
+        image="https://images.pexels.com/photos/6285376/pexels-photo-6285376.jpeg?auto=compress&cs=tinysrgb&w=1200"
+        iconName="Syringe"
+        color="from-amber-500 to-orange-600"
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-14">
-        <h2 className="mb-6 font-display text-xl font-medium text-ink">Vaccines we administer</h2>
+      <section className="container-wide py-14">
+        <h2 className="font-display-bolt mb-6 text-xl font-semibold text-slate-900">
+          Vaccines we administer
+        </h2>
         <div className="grid gap-6 md:grid-cols-2">
           {vaccines.map((vaccine, index) => (
             <Reveal key={vaccine.title} delay={index * 80}>
-              <div className="rounded-lg border border-slate/20 bg-white p-5">
-                <h3 className="mb-1.5 font-display text-base font-medium text-ink">{vaccine.title}</h3>
-                <p className="text-sm text-slate">{vaccine.description}</p>
+              <div className="card-hover rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                <h3 className="font-display-bolt mb-1.5 text-base font-semibold text-slate-900">
+                  {vaccine.title}
+                </h3>
+                <p className="text-sm text-slate-500">{vaccine.description}</p>
               </div>
             </Reveal>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-14">
-        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="container-wide pb-14">
+        <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
           Frequently asked questions
         </h2>
-        <p className="mb-6 max-w-xl text-sm text-slate">
+        <p className="mb-6 max-w-xl text-sm text-slate-500">
           What to know before scheduling a vaccine visit.
         </p>
         <Accordion items={faqs} />
       </section>
 
-      <section className="border-t border-slate/20 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="border-t border-slate-100 bg-slate-50">
+        <div className="container-wide py-12">
+          <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
             Need a vaccine not listed here?
           </h2>
-          <p className="mb-6 max-w-xl text-sm text-slate">
+          <p className="mb-6 max-w-xl text-sm text-slate-500">
             Let us know what your program or employer requires and we&apos;ll confirm whether we
             can administer it on-site.
           </p>
           <Link
             href="/contact"
-            className="inline-block rounded-md bg-signal px-4 py-2.5 text-sm font-medium text-ink"
+            className="inline-block rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/30 transition hover:bg-primary-700"
           >
             Ask us
           </Link>

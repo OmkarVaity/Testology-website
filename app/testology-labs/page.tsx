@@ -52,45 +52,53 @@ export default function TestologyLabsPage() {
       <ServicePageHeader
         eyebrow="Wellness division"
         title="Testology Labs"
+        tagline="Baseline panels & ongoing monitoring"
         intro="Separate from our compliance testing services, Testology Labs supports people actively managing their own wellness — with baseline panels and ongoing monitoring, not just a one-time result."
+        image="https://images.pexels.com/photos/8442376/pexels-photo-8442376.jpeg?auto=compress&cs=tinysrgb&w=1200"
+        iconName="Microscope"
+        color="from-emerald-500 to-teal-600"
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-14">
-        <h2 className="mb-6 font-display text-xl font-medium text-ink">What we offer</h2>
+      <section className="container-wide py-14">
+        <h2 className="font-display-bolt mb-6 text-xl font-semibold text-slate-900">
+          What we offer
+        </h2>
         <div className="grid gap-6 md:grid-cols-3">
           {offerings.map((offering, index) => (
             <Reveal key={offering.title} delay={index * 80}>
-              <div className="rounded-lg border border-slate/20 bg-white p-5">
-                <h3 className="mb-1.5 font-display text-base font-medium text-ink">
+              <div className="card-hover rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                <h3 className="font-display-bolt mb-1.5 text-base font-semibold text-slate-900">
                   {offering.title}
                 </h3>
-                <p className="text-sm text-slate">{offering.description}</p>
+                <p className="text-sm text-slate-500">{offering.description}</p>
               </div>
             </Reveal>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-14">
-        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="container-wide pb-14">
+        <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
           Frequently asked questions
         </h2>
-        <p className="mb-6 max-w-xl text-sm text-slate">
-          How our lab monitoring role fits alongside your provider's guidance.
+        <p className="mb-6 max-w-xl text-sm text-slate-500">
+          How our lab monitoring role fits alongside your provider&apos;s guidance.
         </p>
         <Accordion items={faqs} />
       </section>
 
-      <section className="border-t border-slate/20 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <h2 className="mb-2 font-display text-xl font-medium text-ink">Start with a baseline panel</h2>
-          <p className="mb-6 max-w-xl text-sm text-slate">
+      <section className="border-t border-slate-100 bg-slate-50">
+        <div className="container-wide py-12">
+          <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
+            Start with a baseline panel
+          </h2>
+          <p className="mb-6 max-w-xl text-sm text-slate-500">
             Tell us what you&apos;re working on and we&apos;ll recommend a starting panel and a
             reasonable follow-up schedule.
           </p>
           <Link
             href="/contact"
-            className="inline-block rounded-md bg-signal px-4 py-2.5 text-sm font-medium text-ink"
+            className="inline-block rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/30 transition hover:bg-primary-700"
           >
             Ask us
           </Link>
