@@ -49,50 +49,56 @@ export default function BloodProfilesPage() {
       <ServicePageHeader
         eyebrow="Lab-drawn panels"
         title="Blood profiles"
+        tagline="Employment, wellness & diagnostic panels"
         intro="From employment-required immunity checks to broader wellness panels, our on-site lab handles the draw and routes samples to the right testing partner."
+        image="https://images.pexels.com/photos/4040561/pexels-photo-4040561.jpeg?auto=compress&cs=tinysrgb&w=1200"
+        iconName="Droplet"
+        color="from-rose-500 to-red-600"
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-14">
-        <h2 className="mb-6 font-display text-xl font-medium text-ink">Choose a panel category</h2>
+      <section className="container-wide py-14">
+        <h2 className="font-display-bolt mb-6 text-xl font-semibold text-slate-900">
+          Choose a panel category
+        </h2>
         <div className="grid gap-6 md:grid-cols-2">
           {panelCategories.map((category, index) => (
             <Reveal key={category.href} delay={index * 80}>
               <Link
                 href={category.href}
-                className="block rounded-lg border border-slate/20 bg-white p-5 transition hover:border-slate/40 hover:shadow-sm"
+                className="card-hover block rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
               >
-                <h3 className="mb-1.5 font-display text-base font-medium text-ink">
+                <h3 className="font-display-bolt mb-1.5 text-base font-semibold text-slate-900">
                   {category.title}
                 </h3>
-                <p className="text-sm text-slate">{category.description}</p>
+                <p className="text-sm text-slate-500">{category.description}</p>
               </Link>
             </Reveal>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-14">
-        <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="container-wide pb-14">
+        <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
           Frequently asked questions
         </h2>
-        <p className="mb-6 max-w-xl text-sm text-slate">
+        <p className="mb-6 max-w-xl text-sm text-slate-500">
           What to know before scheduling a blood draw.
         </p>
         <Accordion items={faqs} />
       </section>
 
-      <section className="border-t border-slate/20 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <h2 className="mb-2 font-display text-xl font-medium text-ink">
+      <section className="border-t border-slate-100 bg-slate-50">
+        <div className="container-wide py-12">
+          <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
             Need a panel we haven&apos;t listed?
           </h2>
-          <p className="mb-6 max-w-xl text-sm text-slate">
+          <p className="mb-6 max-w-xl text-sm text-slate-500">
             We work with multiple lab partners and can usually source a specific panel even if
             it&apos;s not one of our standard offerings.
           </p>
           <Link
             href="/contact"
-            className="inline-block rounded-md bg-signal px-4 py-2.5 text-sm font-medium text-ink"
+            className="inline-block rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/30 transition hover:bg-primary-700"
           >
             Ask us
           </Link>
