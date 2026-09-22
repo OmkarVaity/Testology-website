@@ -19,6 +19,20 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  function handleDropdownKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key === "Escape") {
+      setOpenMenu(null);
+      const trigger = e.currentTarget.querySelector<HTMLElement>("a, button");
+      trigger?.focus();
+    }
+  }
+
+  function handleDropdownBlur(e: React.FocusEvent<HTMLDivElement>) {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setOpenMenu(null);
+    }
+  }
+
   return (
     <>
       <div className="bg-primary-600 px-4 py-2 text-center text-sm font-medium text-white">
@@ -65,9 +79,14 @@ export function Header() {
                   className="relative"
                   onMouseEnter={() => setOpenMenu(link.label)}
                   onMouseLeave={() => setOpenMenu(null)}
+                  onFocus={() => setOpenMenu(link.label)}
+                  onBlur={handleDropdownBlur}
+                  onKeyDown={handleDropdownKeyDown}
                 >
                   <Link
                     href={link.href}
+                    aria-haspopup="true"
+                    aria-expanded={openMenu === link.label}
                     className="nav-link flex items-center gap-1 whitespace-nowrap py-2 text-[13px] xl:text-sm"
                   >
                     {link.label}
@@ -110,8 +129,15 @@ export function Header() {
               className="relative"
               onMouseEnter={() => setOpenMenu("more")}
               onMouseLeave={() => setOpenMenu(null)}
+              onFocus={() => setOpenMenu("more")}
+              onBlur={handleDropdownBlur}
+              onKeyDown={handleDropdownKeyDown}
             >
-              <button className="nav-link flex items-center gap-1 whitespace-nowrap py-2 text-[13px] xl:text-sm">
+              <button
+                aria-haspopup="true"
+                aria-expanded={openMenu === "more"}
+                className="nav-link flex items-center gap-1 whitespace-nowrap py-2 text-[13px] xl:text-sm"
+              >
                 More
                 <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />
               </button>
