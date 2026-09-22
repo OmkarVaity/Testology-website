@@ -38,26 +38,26 @@ export function Header() {
             : "bg-white/60 backdrop-blur-md"
         }`}
       >
-        <div className="container-wide flex h-16 items-center justify-between lg:h-20">
-          <Link href="/" className="group flex items-center gap-2.5">
+        <div className="container-wide flex h-16 items-center justify-between gap-6 lg:h-20">
+          <Link href="/" className="group flex flex-shrink-0 items-center gap-2.5">
             <Image
               src="/logo.png"
               alt="Testology, Inc. logo"
-              width={48}
-              height={48}
+              width={44}
+              height={44}
               className="rounded-full shadow-lg shadow-primary-500/20 transition-transform group-hover:scale-105"
             />
-            <div className="flex flex-col leading-none">
-              <span className="font-display-bolt text-lg font-bold text-slate-900 lg:text-xl">
+            <div className="hidden flex-col leading-none sm:flex">
+              <span className="font-display-bolt whitespace-nowrap text-lg font-bold text-slate-900 lg:text-xl">
                 Testology
               </span>
-              <span className="text-[10px] font-medium tracking-wide text-slate-500 lg:text-xs">
+              <span className="whitespace-nowrap text-[10px] font-medium tracking-wide text-slate-500 lg:text-xs">
                 ELEVATE TO EVALUATE
               </span>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-7 lg:flex">
+          <nav className="hidden shrink-0 items-center gap-4 lg:flex xl:gap-6">
             {siteConfig.primaryNav.map((link) =>
               link.children ? (
                 <div
@@ -66,9 +66,12 @@ export function Header() {
                   onMouseEnter={() => setOpenMenu(link.label)}
                   onMouseLeave={() => setOpenMenu(null)}
                 >
-                  <Link href={link.href} className="nav-link flex items-center gap-1 py-2">
+                  <Link
+                    href={link.href}
+                    className="nav-link flex items-center gap-1 whitespace-nowrap py-2 text-[13px] xl:text-sm"
+                  >
                     {link.label}
-                    <ChevronDown className="h-3.5 w-3.5" />
+                    <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />
                   </Link>
                   <AnimatePresence>
                     {openMenu === link.label && (
@@ -83,7 +86,7 @@ export function Header() {
                           <Link
                             key={child.href}
                             href={child.href}
-                            className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-primary-50 hover:text-primary-600"
+                            className="block whitespace-nowrap rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-primary-50 hover:text-primary-600"
                           >
                             {child.label}
                           </Link>
@@ -93,7 +96,11 @@ export function Header() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <Link key={link.href} href={link.href} className="nav-link py-2">
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="nav-link whitespace-nowrap py-2 text-[13px] xl:text-sm"
+                >
                   {link.label}
                 </Link>
               ),
@@ -104,9 +111,9 @@ export function Header() {
               onMouseEnter={() => setOpenMenu("more")}
               onMouseLeave={() => setOpenMenu(null)}
             >
-              <button className="nav-link flex items-center gap-1 py-2">
+              <button className="nav-link flex items-center gap-1 whitespace-nowrap py-2 text-[13px] xl:text-sm">
                 More
-                <ChevronDown className="h-3.5 w-3.5" />
+                <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />
               </button>
               <AnimatePresence>
                 {openMenu === "more" && (
@@ -121,7 +128,7 @@ export function Header() {
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="block rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-primary-50 hover:text-primary-600"
+                        className="block whitespace-nowrap rounded-lg px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-primary-50 hover:text-primary-600"
                       >
                         {item.label}
                       </Link>
@@ -132,16 +139,16 @@ export function Header() {
             </div>
           </nav>
 
-          <div className="hidden items-center gap-3 lg:flex">
+          <div className="ml-2 hidden flex-shrink-0 items-center gap-4 lg:flex">
             <a
               href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`}
-              className="flex items-center gap-2 text-sm font-semibold text-slate-700 transition-colors hover:text-primary-600"
+              className="hidden items-center whitespace-nowrap text-sm font-semibold text-slate-700 transition-colors hover:text-primary-600 xl:flex"
             >
-              <Phone className="h-4 w-4" />
-              {siteConfig.contact.tollFree}
+              <Phone className="mr-2 h-4 w-4 flex-shrink-0" />
+              <span>{siteConfig.contact.tollFree}</span>
             </a>
             <Link href="/contact">
-              <Button className="rounded-xl bg-primary-600 px-6 shadow-lg shadow-primary-500/30 hover:bg-primary-700">
+              <Button className="whitespace-nowrap rounded-xl bg-primary-600 px-5 shadow-lg shadow-primary-500/30 hover:bg-primary-700">
                 Book Appointment
               </Button>
             </Link>

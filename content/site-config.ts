@@ -66,6 +66,9 @@ export const siteConfig = {
 
   // Everything else — tucked into a "More" dropdown
   moreNav: [
+    { label: "Blood Panel Catalog", href: "/catalog/panels" },
+    { label: "Drug Testing Catalog", href: "/catalog/drugs" },
+    { label: "Peptide Catalog", href: "/catalog/peptides" },
     { label: "Physicals", href: "/physicals" },
     { label: "Testology Labs", href: "/testology-labs" },
     { label: "Vaccines", href: "/vaccines" },
