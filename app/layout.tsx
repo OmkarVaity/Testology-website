@@ -3,6 +3,7 @@ import { Space_Grotesk, Inter, JetBrains_Mono, Poppins } from "next/font/google"
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { StructuredData } from "@/components/StructuredData";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${poppins.variable} antialiased`}
       >
+        <StructuredData />
         <Header />
         {children}
         <Footer />

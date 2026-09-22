@@ -60,15 +60,13 @@ export const siteConfig = {
         { label: "Specialty Blood Panels", href: "/blood-profiles/specialty-panels" },
       ],
     },
-    { label: "Employer Solutions", href: "/employer-solutions" },
+    { label: "Catalog & Pricing", href: "/catalog" },
     { label: "Contact", href: "/contact" },
   ] satisfies NavItem[],
 
   // Everything else — tucked into a "More" dropdown
   moreNav: [
-    { label: "Blood Panel Catalog", href: "/catalog/panels" },
-    { label: "Drug Testing Catalog", href: "/catalog/drugs" },
-    { label: "Peptide Catalog", href: "/catalog/peptides" },
+    { label: "Employer Solutions", href: "/employer-solutions" },
     { label: "Physicals", href: "/physicals" },
     { label: "Testology Labs", href: "/testology-labs" },
     { label: "Vaccines", href: "/vaccines" },

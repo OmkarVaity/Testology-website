@@ -23,7 +23,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/mobile-phlebotomy",
     "/event-drug-testing",
     "/partnered-labs",
+    "/catalog",
+    "/catalog/panels",
+    "/catalog/drugs",
+    "/catalog/peptides",
     "/contact",
+    "/privacy-policy",
+    "/terms",
+    "/hipaa-notice",
   ];
 
   return routes.map((route) => ({

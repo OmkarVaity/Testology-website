@@ -165,6 +165,17 @@ export function Footer() {
           <p className="text-sm text-slate-500">
             &copy; {new Date().getFullYear()} {siteConfig.name} All rights reserved.
           </p>
+          <div className="flex flex-wrap justify-center gap-5 text-sm text-slate-500">
+            <Link href="/privacy-policy" className="hover:text-primary-400">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-primary-400">
+              Terms of Service
+            </Link>
+            <Link href="/hipaa-notice" className="hover:text-primary-400">
+              HIPAA Notice
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
