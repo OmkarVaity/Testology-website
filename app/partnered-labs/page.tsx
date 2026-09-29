@@ -3,11 +3,12 @@ import type { Metadata } from "next";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { Accordion } from "@/components/ui/Accordion";
+import { SpecialtyLabDirectory } from "@/components/sections/SpecialtyLabDirectory";
 
 export const metadata: Metadata = {
   title: "Partnered Labs | Testology, Inc.",
   description:
-    "An authorized collection site for Quest Diagnostics, LabCorp, and eScreen, routing results into established lab networks.",
+    "An authorized collection site for Quest Diagnostics, LabCorp, and eScreen, plus a specialty lab network including Natera, NeoGenomics, Guardant Health, and more.",
 };
 
 const labs = [
@@ -48,6 +49,11 @@ const faqs = [
     answer:
       "In many cases yes, if your test was processed through that specific network — ask at the time of your visit and we'll confirm what's possible for your particular panel.",
   },
+  {
+    question: "What is the specialty lab network for?",
+    answer:
+      "When your blood work requires analysis beyond routine drug or wellness panels — such as oncology markers, genetic testing, or autoimmune panels — we draw the sample here and route it to the specialty lab best suited to that specific test.",
+  },
 ];
 
 export default function PartneredLabsPage() {
@@ -65,7 +71,7 @@ export default function PartneredLabsPage() {
 
       <section className="container-wide py-14">
         <h2 className="font-display-bolt mb-6 text-xl font-semibold text-slate-900">
-          Our lab partners
+          Primary collection partners
         </h2>
         <div className="grid gap-6 md:grid-cols-3">
           {labs.map((lab, index) => (
@@ -79,6 +85,18 @@ export default function PartneredLabsPage() {
             </Reveal>
           ))}
         </div>
+      </section>
+
+      <section className="container-wide pb-14">
+        <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
+          Specialty lab network
+        </h2>
+        <p className="mb-6 max-w-2xl text-sm text-slate-500">
+          For blood work beyond routine panels, we route samples to specialized labs based on
+          what's ordered — from oncology and genetic testing to cardiovascular and autoimmune
+          panels. Search below to see if we work with a specific lab.
+        </p>
+        <SpecialtyLabDirectory />
       </section>
 
       <section className="container-wide pb-14">

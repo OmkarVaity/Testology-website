@@ -30,13 +30,13 @@ export const siteConfig = {
     weekday: "Monday–Friday: 9AM–6PM",
     saturday: "Closed (July & August 2026)",
     lastWalkIn:
-      "5:30 PM last walk-in for urine drug test. All other services are by appointment only.",
+      "5:30 PM last walk-in for urine drug test. All other services are by appointments only.",
   },
 
   social: {
     instagram: "https://www.instagram.com/testology.inc/",
     facebook: "https://www.facebook.com/Testology.org",
-    linkedin: "https://www.linkedin.com/in/testology-inc/",
+    linkedin: "https://www.linkedin.com/company/testology-inc",
   },
 
   // Primary nav — visible directly in the header

@@ -1,35 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { siteConfig } from "@/content/site-config";
-
-// TODO: replace this illustration with a real photo once available — swap the
-// <svg> block below for:
-// <img src="/images/clinic-exterior.jpg" alt="Testology's Brighton clinic entrance" className="h-full w-full object-cover" />
-function ClinicIllustration() {
-  return (
-    <svg viewBox="0 0 400 300" className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-      <rect width="400" height="300" fill="#f8fafc" />
-      <g opacity="0.5">
-        {Array.from({ length: 10 }).map((_, row) =>
-          Array.from({ length: 14 }).map((_, col) => (
-            <circle key={`${row}-${col}`} cx={20 + col * 28} cy={20 + row * 28} r="1.2" fill="#0d9488" opacity="0.15" />
-          )),
-        )}
-      </g>
-      <rect x="70" y="110" width="260" height="150" rx="8" fill="#0f172a" />
-      <rect x="90" y="140" width="50" height="60" rx="4" fill="#f8fafc" />
-      <rect x="175" y="140" width="50" height="60" rx="4" fill="#f8fafc" />
-      <rect x="260" y="140" width="50" height="60" rx="4" fill="#f8fafc" />
-      <rect x="180" y="215" width="40" height="45" rx="4" fill="#0d9488" />
-      <rect x="140" y="80" width="120" height="26" rx="13" fill="#0d9488" />
-      <text x="200" y="98" textAnchor="middle" fontFamily="sans-serif" fontWeight="600" fontSize="12" fill="#ffffff" letterSpacing="1">
-        TESTOLOGY
-      </text>
-      <rect x="70" y="106" width="260" height="6" rx="3" fill="#0d9488" />
-    </svg>
-  );
-}
 
 export function ClinicPreview() {
   return (
@@ -62,7 +35,13 @@ export function ClinicPreview() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="card-hover overflow-hidden rounded-3xl border border-slate-100 shadow-xl"
           >
-            <ClinicIllustration />
+            <Image
+              src="/images/clinic/waiting-room.jpg"
+              alt="Testology's Brighton clinic waiting area"
+              width={700}
+              height={500}
+              className="h-[350px] w-full object-cover lg:h-[420px]"
+            />
           </motion.div>
         </div>
       </div>

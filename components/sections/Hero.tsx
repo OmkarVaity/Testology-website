@@ -110,8 +110,8 @@ export function Hero() {
           >
             <div className="relative overflow-hidden rounded-3xl shadow-2xl shadow-slate-900/20">
               <Image
-                src="https://images.pexels.com/photos/6285376/pexels-photo-6285376.jpeg?auto=compress&cs=tinysrgb&w=900"
-                alt="Healthcare professional performing a blood draw"
+                src="https://images.pexels.com/photos/8442376/pexels-photo-8442376.jpeg?auto=compress&cs=tinysrgb&w=900"
+                alt="Drug and alcohol testing collection at Testology"
                 width={900}
                 height={500}
                 className="h-[400px] w-full object-cover lg:h-[500px]"
