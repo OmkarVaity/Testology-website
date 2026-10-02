@@ -76,5 +76,6 @@ export const siteConfig = {
     { label: "Mobile Phlebotomy", href: "/mobile-phlebotomy" },
     { label: "Event Drug Testing", href: "/event-drug-testing" },
     { label: "Partnered Labs", href: "/partnered-labs" },
+    { label: "Clinic Locator", href: "/clinic-locator" },
   ] satisfies NavItem[],
 } as const;

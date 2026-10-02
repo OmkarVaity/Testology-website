@@ -44,6 +44,7 @@ const footerLinks = {
   ],
   Company: [
     { label: "Partnered Labs", href: "/partnered-labs" },
+    { label: "Clinic Locator", href: "/clinic-locator" },
     { label: "Employer Solutions", href: "/employer-solutions" },
     { label: "Contact", href: "/contact" },
   ],

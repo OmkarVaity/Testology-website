@@ -23,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/mobile-phlebotomy",
     "/event-drug-testing",
     "/partnered-labs",
+    "/clinic-locator",
     "/catalog",
     "/catalog/panels",
     "/catalog/drugs",

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>eScreen Clinic Collector</title>
+<!--
+  Internal tooling, not part of the site build. Open this file in Chrome/Edge and drag the
+  buttons to the bookmarks bar. On eScreen's clinic locator results page, click "Collect"
+  after each search; when finished, click "Download" and hand the JSON to
+  scripts/import-escreen.mjs. Rows are kept in localStorage on eScreen's site and de-duplicated.
+-->
+<style>
+  :root { --bg: #f8fafc; --fg: #0f172a; --muted: #475569; --card: #ffffff; --line: #e2e8f0; --accent: #0f766e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f172a; --fg: #e2e8f0; --muted: #94a3b8; --card: #1e293b; --line: #334155; --accent: #2dd4bf; }
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.55 system-ui, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 16px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p, li { color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin: 20px 0; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+  .bm { display: inline-block; padding: 10px 18px; border-radius: 999px; background: var(--accent); color: #fff;
+        font-weight: 600; text-decoration: none; cursor: grab; }
+  .bm.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  code { background: var(--line); padding: 1px 6px; border-radius: 4px; }
+  ol { padding-left: 20px; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin: 12px 0; color: var(--muted); }
+  .toolbar #progress { font-weight: 600; color: var(--fg); }
+  .toolbar button { font: inherit; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--accent);
+                    background: transparent; color: var(--accent); cursor: pointer; }
+  .state { margin-top: 16px; }
+  .state h3 { font-size: 14px; margin: 0 0 6px; display: flex; justify-content: space-between; }
+  .state h3 span { color: var(--muted); font-weight: 400; }
+  .row { display: grid; grid-template-columns: 24px 70px 1fr; align-items: center; gap: 8px; padding: 6px 4px;
+         border-top: 1px solid var(--line); }
+  .row.done { opacity: 0.45; }
+  .row.done .zip { text-decoration: line-through; }
+  .row.flash { outline: 2px solid var(--accent); border-radius: 6px; }
+  .zip { font: 600 15px ui-monospace, monospace; background: none; border: 0; color: var(--accent); cursor: copy;
+         padding: 0; text-align: left; }
+  .place { color: var(--muted); font-size: 14px; }
+  .hide-done .row.done, .hide-done .state.all-done { display: none; }
+  .group-heading { margin: 28px 0 0; padding-top: 16px; border-top: 2px dashed var(--line); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>eScreen Clinic Collector</h1>
+  <p>Collects clinic rows from eScreen's clinic locator results so they don't have to be typed or screenshotted.</p>
+
+  <div class="card">
+    <strong>1. Drag these to your bookmarks bar</strong>
+    <p>Show the bar with <code>Ctrl+Shift+B</code> if it's hidden. Clicking them on this page does nothing.</p>
+    <div class="buttons">
+      <a class="bm" id="bm-collect" href="#">Collect eScreen clinics</a>
+      <a class="bm secondary" id="bm-download" href="#">Download clinics</a>
+      <a class="bm secondary" id="bm-reset" href="#">Reset collector</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>2. On eScreen's clinic locator</strong>
+    <ol>
+      <li>Pick the state, enter the postal code, set distance to <code>100</code> miles, and click Search.</li>
+      <li>Click "Show more clinics" until every result is listed.</li>
+      <li>Click <strong>Collect eScreen clinics</strong>. A popup says how many new clinics were added.</li>
+      <li>Repeat for the next search. Overlapping searches are fine because duplicates are skipped.</li>
+      <li>When done, click <strong>Download clinics</strong> and send the JSON file over for import.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <strong>3. Nationwide search plan</strong>
+    <p>Each search below is a 100-mile circle. Together they overlap to cover the whole country with a 10-mile safety
+      margin. eScreen's results cross state lines, so a state with few rows is still fully covered by its neighbours.
+      These have no search of their own because neighbouring searches already cover them:
+      <span id="no-own-states">CT, DE, DC, MD, MA, VT</span>.
+      Select the state shown, type the postal code (click it to copy), search, collect, then tick it off.
+      Progress is saved in this browser, so this can be spread over several sittings.</p>
+    <p>If a search returns a suspiciously round number of results (like 100 or 250) and the farthest one is well under
+      100 mi, eScreen may be capping the list. Note that postal code so the area can be split into smaller searches.</p>
+    <div class="toolbar">
+      <span id="progress"></span>
+      <label><input type="checkbox" id="hide-done" /> Hide finished</label>
+      <button type="button" id="next-search">Jump to next</button>
+    </div>
+    <div id="plan"></div>
+  </div>
+</main>
+
+<script>
+  // Each function runs on eScreen's page as a bookmarklet, so it must be self-contained.
+  function collect() {
+    var KEY = "testologyEscreenClinics";
+    var PHONE = /^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
+    var STATE_ZIP = /\b([A-Z]{2})\s+(\d{5})(?:-\d{4})?\b/;
+
+    // The locator may render inside a same-origin frame.
+    var docs = [document];
+    for (var f = 0; f < window.frames.length; f++) {
+      try { if (window.frames[f].document) docs.push(window.frames[f].document); } catch (e) {}
+    }
+
+    var store;
+    try { store = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { store = {}; }
+
+    var found = 0, added = 0, farthest = 0, skipped = [];
+    docs.forEach(function (doc) {
+      doc.querySelectorAll("tr").forEach(function (tr) {
+        var tds = Array.prototype.slice.call(tr.querySelectorAll("td"));
+        if (tds.length < 5) return;
+        var text = tds.map(function (td) { return (td.innerText || td.textContent || "").replace(/\s+/g, " ").trim(); });
+        var p = text.findIndex(function (t) { return PHONE.test(t); });
+        if (p < 2) return;
+
+        var name = "";
+        for (var i = p - 2; i >= 0 && !name; i--) name = text[i];
+        var tail = text.slice(p + 1);
+        var stateZip = tail.join(" ").match(STATE_ZIP);
+        if (!name || !stateZip) { skipped.push(text.join(" | ")); return; }
+
+        // Status icons and the "hover for details" content, kept raw and mapped during import.
+        var icons = Array.prototype.slice.call(tr.querySelectorAll("img, [style*='background']")).map(function (el) {
+          return [el.getAttribute("src") || el.style.backgroundImage || "", el.getAttribute("alt") || "", el.getAttribute("title") || ""].join(" ~ ");
+        });
+        var details = Array.prototype.slice.call(tr.querySelectorAll("[title], [onmouseover], [data-content], [data-original-title]"))
+          .map(function (el) {
+            return [el.getAttribute("title"), el.getAttribute("onmouseover"), el.getAttribute("data-content"), el.getAttribute("data-original-title")]
+              .filter(Boolean).join(" ~ ");
+          }).filter(Boolean);
+
+        found++;
+        farthest = Math.max(farthest, parseFloat(text[p - 1]) || 0);
+        var record = {
+          name: name,
+          distance: text[p - 1],
+          phone: text[p],
+          address: tail[0] || "",
+          city: tail.length > 2 ? tail[1] : "",
+          state: stateZip[1],
+          zip: stateZip[2],
+          icons: icons,
+          details: details.join(" ").slice(0, 1500),
+          rawCells: text,
+          sourceUrl: location.href,
+          collectedAt: new Date().toISOString()
+        };
+        var key = (record.name + "|" + record.phone.replace(/\D/g, "") + "|" + record.address).toLowerCase();
+        if (!store[key]) { store[key] = record; added++; }
+      });
+    });
+
+    try { localStorage.setItem(KEY, JSON.stringify(store)); }
+    catch (e) { alert("Couldn't save collected clinics: " + e.message); return; }
+
+    var total = Object.keys(store).length;
+    if (found === 0) {
+      alert("No clinic rows found on this page.\n\nIf results are visible, save the page with Ctrl+S (\"Webpage, HTML only\") and send the file over so the collector can be adjusted.");
+      return;
+    }
+    alert("Found " + found + " clinics on this page: " + added + " new, " + (found - added) + " already collected.\n" +
+      "Farthest result on this page: " + farthest + " mi.\n\nTotal collected: " + total +
+      (skipped.length ? "\n\n" + skipped.length + " row(s) couldn't be read; they'll be in the console." : ""));
+    if (skipped.length) console.warn("eScreen collector skipped rows:", skipped);
+  }
+
+  function download() {
+    var KEY = "testologyEscreenClinics";
+    var store = JSON.parse(localStorage.getItem(KEY) || "{}");
+    var list = Object.keys(store).map(function (k) { return store[k]; });
+    if (!list.length) { alert("Nothing collected yet on this site."); return; }
+    var blob = new Blob([JSON.stringify(list, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "escreen-clinics-" + new Date().toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  function reset() {
+    var KEY = "testologyEscreenClinics";
+    var n = Object.keys(JSON.parse(localStorage.getItem(KEY) || "{}")).length;
+    if (confirm("Delete the " + n + " collected clinics stored on this site? Download them first if you haven't.")) {
+      localStorage.removeItem(KEY);
+      alert("Collector reset.");
+    }
+  }
+
+  function toBookmarklet(fn) {
+    return "javascript:" + encodeURIComponent("(" + fn.toString() + ")();void 0");
+  }
+
+  // ---- Search plan checklist (runs on this page only) ----
+  // [state, postal code, place, tier (1 core / 2 optional), note]. Generated from the 2020 Census ZCTA gazetteer:
+  // every US postal-code area fits inside at least one 100-mi search (distance + area radius <= 95 mi).
+  var SEARCHES = /*PLAN*/[["AK","99723","North Slope Borough",1,""],["AK","99519","North Slope Borough",2,""],["AK","99747","Kaktovik",2,""],["AK","99759","North Slope Borough",2,""],["AK","99750","Kivalina",1,""],["AK","99781","Unorganized Borough",2,""],["AK","99749","Kiana",1,""],["AK","99726","Unorganized Borough",2,""],["AK","99751","Kobuk",2,""],["AK","99745","Hughes",2,""],["AK","99733","Unorganized Borough",2,""],["AK","99778","Unorganized Borough",1,""],["AK","99753","Koyuk",2,""],["AK","99703","Fairbanks",1,""],["AK","99741","Galena",2,""],["AK","99757","Unorganized Borough",2,""],["AK","99769","Savoonga",2,""],["AK","99776","Unorganized Borough",2,""],["AK","99627","McGrath",2,""],["AK","99581","Emmonak",2,""],["AK","99558","Anvik",2,""],["AK","99683","Matanuska-Susitna Borough",1,""],["AK","99573","Unorganized Borough",1,""],["AK","99575","Unorganized Borough",2,""],["AK","99563","Chevak",2,""],["AK","99566","Unorganized Borough",1,""],["AK","99587","Anchorage",1,""],["AK","99578","Eek",1,""],["AK","99556","Kenai Peninsula Borough",1,""],["AK","99606","Newhalen",2,""],["AK","99827","Haines Borough",1,""],["AK","99555","Aleknagik",2,""],["AK","99550","Port Lions",1,""],["AK","99820","Angoon",1,""],["AK","99549","Port Heiden",2,""],["AK","99591","St. George",2,""],["AK","99918","Coffman Cove",1,""],["AK","99901","Ketchikan",1,""],["AK","99571","Cold Bay",2,""],["AK","99553","Akutan",1,""],["AK","99638","Unorganized Borough",2,""],["AK","99547","Atka",2,""],["AK","99546","Adak",2,""],["AL","35968","Fort Payne",1,""],["AL","35459","Sumter County",1,""],["AL","36776","Hale County",1,""],["AL","36879","Waverly",1,""],["AR","72434","Randolph County",1,""],["AR","72740","Madison County",1,""],["AR","72390","Helena-West Helena",1,""],["AR","71913","Hot Springs",1,""],["AS","96799","Matu'u",2,""],["AZ","86045","Coconino County",1,""],["AZ","86429","Bullhead City",1,""],["AZ","86338","Yavapai County",1,""],["AZ","85939","Taylor",1,""],["AZ","85334","La Paz County",1,""],["AZ","85123","Pinal County",1,""],["AZ","85534","Greenlee County",1,""],["AZ","85356","Yuma County",1,""],["AZ","85602","Cochise County",1,""],["AZ","85607","Cochise County",1,""],["CA","96032","Siskiyou County",1,""],["CA","96006","Modoc County",1,""],["CA","95429","Mendocino County",1,""],["CA","95981","Plumas County",1,""],["CA","93517","Mono County",1,""],["CA","94547","Hercules",1,""],["CA","93529","Mono County",1,""],["CA","93930","King City",1,""],["CA","93208","Camp Nelson",1,""],["CA","92301","Adelanto",1,""],["CA","93105","Santa Barbara",1,""],["CA","90001","Los Angeles County",1,""],["CA","91962","San Diego County",1,""],["CO","81640","Moffat County",1,""],["CO","80228","Lakewood",1,""],["CO","80822","Yuma County",1,""],["CO","81650","Rifle",1,""],["CO","81022","Avondale",1,""],["CO","81143","Saguache County",1,""],["CO","81235","Hinsdale County",1,""],["FL","32535","Escambia County",1,""],["FL","32423","Jackson County",1,""],["FL","32686","Marion County",1,""],["FL","32948","Fellsmere",1,""],["FL","33873","Wauchula",1,""],["FL","34137","Collier County",1,""],["FL","33001","Monroe County",1,""],["GA","30511","Banks County",1,""],["GA","31090","Wilkinson County",1,""],["GA","31634","Homerville",1,""],["GA","31601","Lowndes County",1,""],["HI","96703","Anahola",1,""],["HI","96729","Kualapuu",1,""],["HI","96710","Hawaiʻi County",1,""],["IA","51244","Sioux County",1,""],["IA","50401","Mason City",1,""],["IA","51521","Avoca",1,""],["IA","50207","Mahaska County",1,""],["ID","83654","Adams County",1,""],["ID","83468","Lemhi County",1,""],["ID","83628","Owyhee County",1,""],["ID","83218","Basalt",1,""],["ID","83337","Elmore County",1,""],["ID","83201","Pocatello",1,""],["ID","83302","Owyhee County",1,""],["IL","61235","Henry County",1,""],["IL","62563","Rochester",1,""],["IL","62832","Du Quoin",1,""],["IN","46307","Crown Point",1,""],["IN","46135","Greencastle",1,""],["IN","47520","Perry County",1,""],["KS","67629","Clayton",1,""],["KS","66930","Agenda",1,""],["KS","66842","Butler County",1,""],["KS","67878","Syracuse",1,""],["KS","67547","Kinsley",1,""],["KY","40391","Clark County",1,""],["LA","71222","Union Parish",1,""],["LA","71327","Cottonport",1,""],["LA","70501","Lafayette",1,""],["LA","70601","Lake Charles",1,""],["LA","70091","Plaquemines Parish",1,""],["ME","04740","Easton",1,""],["ME","04406","Abbot",1,""],["ME","04408","Aurora",1,""],["MI","49946","L'Anse",1,""],["MI","49768","Whitefish Township",1,""],["MI","49670","Northport",1,""],["MI","49611","Chestonia Township",1,""],["MI","48811","Carson City",1,""],["MI","48059","Fort Gratiot Charter Township",1,""],["MN","56685","Beltrami County",1,""],["MN","55603","Crystal Bay Township",1,""],["MN","56442","Crosslake",1,""],["MN","55331","Shorewood",1,""],["MO","64501","Saint Joseph",1,""],["MO","63437","Clarence",1,""],["MO","65401","Rolla",1,""],["MO","64750","Vernon County",1,""],["MP","96951","Rota Municipality",1,"Rota; also covers Guam and Saipan"],["MS","38838","Tishomingo County",1,""],["MS","39039","Yazoo County",1,""],["MS","39478","Walthall County",1,""],["MT","59923","Lincoln County",1,""],["MT","59231","Valley County",1,""],["MT","59521","Chouteau County",1,""],["MT","59448","Heart Butte",1,""],["MT","59847","Missoula County",1,""],["MT","59338","Custer County",1,""],["MT","59647","Broadwater County",1,""],["MT","59072","Musselshell County",1,""],["NC","27909","Pasquotank County",1,""],["NC","28665","Wilkes County",1,""],["NC","27581","Stem",1,""],["NC","27806","Beaufort County",1,""],["NC","28340","Fairmont",1,""],["ND","58856","Williams County",1,""],["ND","58713","McHenry County",1,""],["ND","58237","Walsh County",1,""],["ND","58621","Beach",1,""],["ND","58021","Addison Township",1,""],["ND","58524","Kidder County",1,""],["ND","58647","New England",1,""],["NE","69163","Logan County",1,""],["NE","68638","Fullerton",1,""],["NE","69156","Potter",1,""],["NH","03579","Errol",1,""],["NH","03261","Northwood",1,""],["NJ","08006","Barnegat Light",1,""],["NM","88424","Union County",1,""],["NM","87455","San Juan County",1,""],["NM","87548","Rio Arriba County",1,""],["NM","88353","Vaughn",1,""],["NM","87827","Catron County",1,""],["NM","87940","Doña Ana County",1,""],["NM","88254","Eddy County",1,""],["NV","89404","Humboldt County",1,""],["NV","89830","Elko County",1,""],["NV","89412","Washoe County",1,""],["NV","89820","Lander County",1,""],["NV","89310","Lander County",1,""],["NV","89022","Nye County",1,""],["NV","89043","Lincoln County",1,""],["NV","89048","Nye County",1,""],["NY","12959","Town of Mooers",1,""],["NY","12812","Town of Indian Lake",1,""],["NY","12822","Town of Corinth",1,""],["NY","13033","Town of Ira",1,""],["NY","14001","Village of Akron",1,""],["NY","10516","Town of Philipstown",1,""],["OH","43506","Bryan",1,""],["OH","44011","Avon",1,""],["OH","45325","Farmersville",1,""],["OH","43756","Morgan Township",1,""],["OK","73737","Fairview",1,""],["OK","74060","Tulsa",1,""],["OK","74540","Pushmataha County",1,""],["OK","73529","Comanche",1,""],["OR","97002","Clackamas County",1,""],["OR","97856","Grant County",1,""],["OR","97342","Detroit",1,""],["OR","97712","Deschutes County",1,""],["OR","97641","Lake County",1,""],["OR","97470","Roseburg",1,""],["PA","16353","Washington Township",1,""],["PA","17731","Eagles Mere",1,""],["PA","15558","Elk Lick Township",1,""],["PA","17349","Shrewsbury Township",1,""],["PR","00707","Maunabo",1,"also covers the US Virgin Islands"],["RI","02837","Little Compton",1,""],["SC","29055","Great Falls",1,""],["SC","29446","Colleton County",1,""],["SC","29902","Beaufort",1,""],["SD","57438","Faulkton",1,""],["SD","57626","Faith",1,""],["SD","57259","Adams Township",1,""],["SD","57339","Victory West Township",1,""],["SD","57735","Fall River County",1,""],["SD","57356","Lake Andes",1,""],["SD","57574","Bennett County",1,""],["TN","37087","Wilson County",1,""],["TN","37779","Union County",1,""],["TN","38230","Greenfield",1,""],["TX","79081","Spearman",1,""],["TX","79233","Estelline",1,""],["TX","79009","Bovina",1,""],["TX","75644","Upshur County",1,""],["TX","76102","Fort Worth",1,""],["TX","79331","Lamesa",1,""],["TX","79501","Jones County",1,""],["TX","79836","Clint",1,""],["TX","76887","McCulloch County",1,""],["TX","79718","Reeves County",1,""],["TX","77837","Calvert",1,""],["TX","75938","Tyler County",1,""],["TX","76943","Crockett County",1,""],["TX","79734","Jeff Davis County",1,""],["TX","78843","Val Verde County",1,""],["TX","77488","Wharton",1,""],["TX","79834","Brewster County",1,""],["TX","78112","Bexar County",1,""],["TX","78001","La Salle County",1,""],["TX","78343","Nueces County",1,""],["TX","78353","Brooks County",1,""],["UT","84086","Woodruff",1,""],["UT","84022","Tooele County",1,""],["UT","84034","Tooele County",1,""],["UT","84539","East Carbon",1,""],["UT","84712","Antimony",1,""],["UT","84535","San Juan County",1,""],["UT","84763","Rockville",1,""],["VA","22952","Augusta County",1,""],["VA","22435","Northumberland County",1,""],["WA","98859","Okanogan County",1,""],["WA","98237","Skagit County",1,""],["WA","98357","Clallam County",1,""],["WA","99102","Albion",1,""],["WA","98901","Terrace Heights",1,""],["WA","98572","Pe Ell",1,""],["WI","54896","Town of Winter",1,""],["WI","54771","Town of Withee",1,""],["WI","54153","Oconto",1,""],["WI","53573","Town of Eagle",1,""],["WI","53211","Shorewood",1,""],["WV","25148","Boone County",1,""],["WY","82836","Sheridan County",1,""],["WY","82190","Park County",1,""],["WY","82714","Crook County",1,""],["WY","82648","Natrona County",1,""],["WY","82514","Fort Washakie",1,""],["WY","82329","Albany County",1,""],["WY","82055","Albany County",1,""]]/*END_PLAN*/;
+  var STATE_NAMES = { AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California", CO: "Colorado",
+    CT: "Connecticut", DE: "Delaware", DC: "District of Columbia", FL: "Florida", GA: "Georgia", HI: "Hawaii",
+    ID: "Idaho", IL: "Illinois", IN: "Indiana", IA: "Iowa", KS: "Kansas", KY: "Kentucky", LA: "Louisiana",
+    ME: "Maine", MD: "Maryland", MA: "Massachusetts", MI: "Michigan", MN: "Minnesota", MS: "Mississippi",
+    MO: "Missouri", MT: "Montana", NE: "Nebraska", NV: "Nevada", NH: "New Hampshire", NJ: "New Jersey",
+    NM: "New Mexico", NY: "New York", NC: "North Carolina", ND: "North Dakota", OH: "Ohio", OK: "Oklahoma",
+    OR: "Oregon", PA: "Pennsylvania", RI: "Rhode Island", SC: "South Carolina", SD: "South Dakota",
+    TN: "Tennessee", TX: "Texas", UT: "Utah", VT: "Vermont", VA: "Virginia", WA: "Washington",
+    WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming", PR: "Puerto Rico", VI: "Virgin Islands", GU: "Guam" };
+
+  var DONE_KEY = "escreenPlanDone";
+  var done;
+  try { done = JSON.parse(localStorage.getItem(DONE_KEY) || "{}"); } catch (e) { done = {}; }
+  function saveDone() { try { localStorage.setItem(DONE_KEY, JSON.stringify(done)); } catch (e) {} }
+
+  function renderPlan() {
+    var plan = document.getElementById("plan");
+    plan.innerHTML = "";
+    renderGroup(plan, SEARCHES.filter(function (s) { return s[3] === 1; }), null);
+    renderGroup(plan, SEARCHES.filter(function (s) { return s[3] === 2; }),
+      "Optional: remote Alaska and American Samoa. Mostly villages with few or no clinics, so do these last.");
+    var core = SEARCHES.filter(function (s) { return s[3] === 1; });
+    var n = core.filter(function (s) { return done[s[1]]; }).length;
+    var opt = SEARCHES.length - core.length;
+    var optDone = SEARCHES.filter(function (s) { return s[3] === 2 && done[s[1]]; }).length;
+    document.getElementById("progress").textContent =
+      n + " of " + core.length + " core searches done" + (opt ? " (+" + optDone + " of " + opt + " optional)" : "");
+  }
+
+  function renderGroup(plan, searches, heading) {
+    if (!searches.length) return;
+    if (heading) {
+      var h = document.createElement("p");
+      h.className = "group-heading";
+      h.textContent = heading;
+      plan.appendChild(h);
+    }
+    var byState = {};
+    searches.forEach(function (s) { (byState[s[0]] = byState[s[0]] || []).push(s); });
+    Object.keys(byState).sort(function (a, b) { return (STATE_NAMES[a] || a).localeCompare(STATE_NAMES[b] || b); })
+      .forEach(function (st) {
+        var rows = byState[st];
+        var finished = rows.filter(function (s) { return done[s[1]]; }).length;
+        var section = document.createElement("div");
+        section.className = "state" + (finished === rows.length ? " all-done" : "");
+        section.innerHTML = "<h3>" + (STATE_NAMES[st] || st) + " <span>" + finished + " / " + rows.length + "</span></h3>";
+        rows.forEach(function (s) {
+          var row = document.createElement("div");
+          row.className = "row" + (done[s[1]] ? " done" : "");
+          row.innerHTML = '<input type="checkbox" id="zip-' + s[1] + '"' + (done[s[1]] ? " checked" : "") + " />" +
+            '<button type="button" class="zip" title="Copy postal code">' + s[1] + "</button>" +
+            '<label class="place" for="zip-' + s[1] + '"></label>';
+          // Place names come from OpenStreetMap, so set them as text rather than HTML.
+          row.querySelector(".place").textContent = s[2] + (s[4] ? " · " + s[4] : "");
+          row.querySelector("input").addEventListener("change", function (e) {
+            if (e.target.checked) done[s[1]] = true; else delete done[s[1]];
+            saveDone();
+            renderPlan();
+          });
+          row.querySelector(".zip").addEventListener("click", function (e) {
+            e.preventDefault();
+            if (navigator.clipboard) navigator.clipboard.writeText(s[1]);
+            e.target.textContent = "Copied";
+            setTimeout(function () { e.target.textContent = s[1]; }, 900);
+          });
+          section.appendChild(row);
+        });
+        plan.appendChild(section);
+      });
+  }
+
+  document.getElementById("hide-done").addEventListener("change", function (e) {
+    document.getElementById("plan").classList.toggle("hide-done", e.target.checked);
+  });
+  document.getElementById("next-search").addEventListener("click", function () {
+    var next = document.querySelector("#plan .row:not(.done)");
+    if (!next) return;
+    next.scrollIntoView({ block: "center", behavior: "smooth" });
+    next.classList.add("flash");
+    setTimeout(function () { next.classList.remove("flash"); }, 1200);
+  });
+  renderPlan();
+
+  document.getElementById("bm-collect").href = toBookmarklet(collect);
+  document.getElementById("bm-download").href = toBookmarklet(download);
+  document.getElementById("bm-reset").href = toBookmarklet(reset);
+</script>
+</body>
+</html>
