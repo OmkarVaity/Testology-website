@@ -2,17 +2,18 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { Search, Loader2, X, LocateFixed, Navigation, Phone, Link2, Check, Stethoscope } from "lucide-react";
 import {
-  decodeClinic,
   directionsUrl,
   matchesFilters,
   siteTypeOptions,
-  type Clinic,
   type ClinicStatus,
-  type CompactClinic,
   type SiteTypeFilter,
 } from "@/content/clinics";
+import { useClinics } from "@/lib/use-clinics";
+import { ORDERING_ENABLED, orderUrl } from "@/lib/order-links";
+import { capabilityMeta, clinicOffersService, getService } from "@/content/escreen-services";
 import { geocodeAddress, haversineMiles } from "@/lib/geo";
 import { ClinicStatusIcon, ClinicStatusLegend } from "./ClinicStatusIcon";
 import type { MappableClinic } from "./ClinicMap";
@@ -75,10 +76,11 @@ export function ClinicLocator() {
   const radius = parseRadius(searchParams.get("radius"));
   const siteType = parseSiteType(searchParams.get("type"));
   const physicalsOnly = searchParams.get("physicals") === "1";
-  const filtersActive = siteType !== "all" || physicalsOnly;
+  // Set by "Find a clinic" on /escreen-services: only clinics that can perform that test.
+  const service = getService(searchParams.get("service"));
+  const filtersActive = siteType !== "all" || physicalsOnly || !!service;
 
-  const [allClinics, setAllClinics] = useState<Clinic[]>([]);
-  const [dataStatus, setDataStatus] = useState<"loading" | "ready" | "error">("loading");
+  const { clinics: allClinics, status: dataStatus } = useClinics();
   const [query, setQuery] = useState(activeQuery ?? "");
   const [lookup, setLookup] = useState<Lookup | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -100,26 +102,6 @@ export function ClinicLocator() {
     setSelectedClinic(null);
     setVisibleCount(PAGE_SIZE);
   }
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/clinics")
-      .then((res) => {
-        if (!res.ok) throw new Error(`Clinic data request failed (${res.status})`);
-        return res.json() as Promise<CompactClinic[]>;
-      })
-      .then((rows) => {
-        if (cancelled) return;
-        setAllClinics(rows.map(decodeClinic));
-        setDataStatus("ready");
-      })
-      .catch(() => {
-        if (!cancelled) setDataStatus("error");
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Geocode whatever search the URL holds; a stale response for an older query is ignored.
   useEffect(() => {
@@ -152,7 +134,7 @@ export function ClinicLocator() {
   const mappableClinics: MappableClinic[] = useMemo(() => {
     const filters = { siteType, physicalsOnly };
     const withDistance = allClinics
-      .filter((clinic) => matchesFilters(clinic, filters))
+      .filter((clinic) => matchesFilters(clinic, filters) && (!service || clinicOffersService(clinic, service)))
       .map((clinic) => {
         const distanceMiles =
           userLocation && clinic.lat !== null && clinic.lng !== null
@@ -169,7 +151,7 @@ export function ClinicLocator() {
       withDistance.sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
     }
     return withDistance;
-  }, [allClinics, userLocation, radius, siteType, physicalsOnly]);
+  }, [allClinics, userLocation, radius, siteType, physicalsOnly, service]);
 
   const results = useMemo(() => mappableClinics.filter((c) => c.inRange), [mappableClinics]);
   const nearestOutOfRange = results.length === 0 ? mappableClinics.find((c) => c.distanceMiles !== null) : undefined;
@@ -290,7 +272,12 @@ export function ClinicLocator() {
 
   function handleClearFilters() {
     resetResults();
-    updateParams({ type: null, physicals: null }, "replace");
+    updateParams({ type: null, physicals: null, service: null }, "replace");
+  }
+
+  function handleClearService() {
+    resetResults();
+    updateParams({ service: null }, "replace");
   }
 
   async function handleCopyLink() {
@@ -369,6 +356,23 @@ export function ClinicLocator() {
           </label>
         </div>
       </div>
+
+      {service && (
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary-100 bg-primary-50 px-4 py-2.5 text-sm text-primary-900">
+          <p>
+            Showing clinics for <span className="font-semibold">{service.name}</span>{" "}
+            <span className="text-primary-700">({capabilityMeta[service.performedAt].label})</span>
+          </p>
+          <div className="flex items-center gap-3 text-xs font-semibold">
+            <Link href="/escreen-services" className="text-primary-700 hover:underline">
+              Change test
+            </Link>
+            <button type="button" onClick={handleClearService} className="text-slate-500 hover:underline">
+              Show all clinics
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Filter clinics">
         <div className="flex rounded-xl border border-slate-200 bg-white p-1">
@@ -546,6 +550,14 @@ export function ClinicLocator() {
                       <Navigation className="h-3 w-3" />
                       Directions
                     </a>
+                    {ORDERING_ENABLED && (
+                      <Link
+                        href={orderUrl(clinic.id, service?.id)}
+                        className="ml-auto rounded-lg bg-primary-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-primary-700"
+                      >
+                        Order here
+                      </Link>
+                    )}
                   </div>
                 </div>
               );

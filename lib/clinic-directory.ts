@@ -140,6 +140,10 @@ export function getTotalClinicCount(): number {
   return getIndex().clinics.length;
 }
 
+export function getAllClinics(): Clinic[] {
+  return getIndex().clinics;
+}
+
 export function statsFor(clinics: Clinic[]): ClinicStats {
   return {
     total: clinics.length,

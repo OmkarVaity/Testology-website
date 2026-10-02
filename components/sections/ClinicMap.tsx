@@ -6,6 +6,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Clinic } from "@/content/clinics";
 import { clinicStatusMeta, directionsUrl } from "@/content/clinics";
+import { ORDERING_ENABLED, orderUrl } from "@/lib/order-links";
 
 export type MappableClinic = Clinic & { distanceMiles: number | null; inRange: boolean };
 
@@ -76,6 +77,11 @@ function popupContent(clinic: MappableClinic): HTMLElement {
   directions.rel = "noopener noreferrer";
   links.append(phone, directions);
   root.append(links);
+  if (ORDERING_ENABLED) {
+    const order = el("a", "mt-2 inline-block rounded-lg bg-primary-600 px-3 py-1 text-xs font-semibold !text-white", "Order a test here") as HTMLAnchorElement;
+    order.href = orderUrl(clinic.id);
+    root.append(order);
+  }
   return root;
 }
 

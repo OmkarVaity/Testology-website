@@ -25,6 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/event-drug-testing",
     "/partnered-labs",
     "/clinic-locator",
+    "/escreen-services",
     "/catalog",
     "/catalog/panels",
     "/catalog/drugs",

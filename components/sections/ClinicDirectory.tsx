@@ -5,6 +5,7 @@ import { ChevronRight, MapPin } from "lucide-react";
 import { clinicStatusMeta, directionsUrl, type Clinic } from "@/content/clinics";
 import { siteConfig } from "@/content/site-config";
 import type { ClinicStats } from "@/lib/clinic-directory";
+import { ORDERING_ENABLED, orderUrl } from "@/lib/order-links";
 
 export type Crumb = { label: string; href: string };
 
@@ -102,6 +103,11 @@ export function DirectoryClinicList({ clinics }: { clinics: Clinic[] }) {
             <a href={directionsUrl(clinic)} target="_blank" rel="noopener noreferrer" className="hover:underline">
               Directions
             </a>
+            {ORDERING_ENABLED && (
+              <Link href={orderUrl(clinic.id)} className="font-semibold hover:underline">
+                Order here
+              </Link>
+            )}
           </div>
         </li>
       ))}
