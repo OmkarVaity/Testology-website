@@ -31,14 +31,68 @@ export type Clinic = {
 /** A row of content/clinics.json — everything except the derived id. */
 export type ClinicRecord = Omit<Clinic, "id">;
 
-export const clinicStatusMeta: Record<ClinicStatus, { label: string; badge: string; color: string }> = {
-  installed: { label: "Installed", badge: "green", color: "#16a34a" },
-  installedPremium: { label: "Installed $$$", badge: "green", color: "#16a34a" },
-  uninstalledInNetwork: { label: "Uninstalled in Network", badge: "yellow", color: "#ca8a04" },
-  electronicChain: { label: "Electronic Chain", badge: "green", color: "#16a34a" },
-  outOfNetwork: { label: "Out of Network", badge: "red", color: "#dc2626" },
-  ePhysical: { label: "ePhysical", badge: "green", color: "#16a34a" },
+/**
+ * `label`/`description` are what visitors see; `escreenName` is eScreen's own legend term, kept for reference
+ * when matching new exports.
+ */
+export const clinicStatusMeta: Record<
+  ClinicStatus,
+  { label: string; description: string; escreenName: string; color: string }
+> = {
+  installed: {
+    label: "eScreen on-site",
+    description: "Collects drug tests with eScreen's system on site — typically urgent care and occupational health clinics.",
+    escreenName: "Installed",
+    color: "#16a34a",
+  },
+  installedPremium: {
+    label: "eScreen on-site (higher fee)",
+    description: "An eScreen on-site clinic that may charge a higher collection fee.",
+    escreenName: "Installed $$$",
+    color: "#16a34a",
+  },
+  uninstalledInNetwork: {
+    label: "In network (paper forms)",
+    description: "In eScreen's network, but collects with paper custody forms rather than eScreen's system.",
+    escreenName: "Uninstalled in Network",
+    color: "#ca8a04",
+  },
+  electronicChain: {
+    label: "Lab partner site",
+    description: "A LabCorp, Quest or other lab location that receives eScreen orders electronically.",
+    escreenName: "Electronic Chain",
+    color: "#16a34a",
+  },
+  outOfNetwork: {
+    label: "Out of network",
+    description: "Not in eScreen's network.",
+    escreenName: "Out of Network",
+    color: "#dc2626",
+  },
+  ePhysical: {
+    label: "Physicals",
+    description: "Offers DOT and employment physicals.",
+    escreenName: "ePhysical",
+    color: "#16a34a",
+  },
 };
+
+export type SiteTypeFilter = "all" | "onsite" | "lab";
+
+export const siteTypeOptions: { value: SiteTypeFilter; label: string }[] = [
+  { value: "all", label: "All sites" },
+  { value: "onsite", label: "eScreen on-site" },
+  { value: "lab", label: "Lab partner sites" },
+];
+
+export type ClinicFilters = { siteType: SiteTypeFilter; physicalsOnly: boolean };
+
+export function matchesFilters(clinic: Clinic, { siteType, physicalsOnly }: ClinicFilters): boolean {
+  if (physicalsOnly && !clinic.statuses.includes("ePhysical")) return false;
+  if (siteType === "onsite") return clinic.statuses.some((s) => s === "installed" || s === "installedPremium");
+  if (siteType === "lab") return clinic.statuses.includes("electronicChain");
+  return true;
+}
 
 const STATUS_BITS = Object.keys(clinicStatusMeta) as ClinicStatus[];
 

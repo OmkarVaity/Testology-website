@@ -1,4 +1,4 @@
-import { Monitor, DollarSign, ClipboardList, RefreshCw, Ban, User, type LucideIcon } from "lucide-react";
+import { Monitor, DollarSign, ClipboardList, FlaskConical, Ban, Stethoscope, type LucideIcon } from "lucide-react";
 import type { ClinicStatus } from "@/content/clinics";
 import { clinicStatusMeta } from "@/content/clinics";
 
@@ -6,12 +6,12 @@ const statusIconMap: Record<ClinicStatus, LucideIcon> = {
   installed: Monitor,
   installedPremium: DollarSign,
   uninstalledInNetwork: ClipboardList,
-  electronicChain: RefreshCw,
+  electronicChain: FlaskConical,
   outOfNetwork: Ban,
-  ePhysical: User,
+  ePhysical: Stethoscope,
 };
 
-/** Round colored badge with a white glyph, mirroring eScreen's status markers. */
+/** Round colored badge with a white glyph; hover shows the plain-language label. */
 export function ClinicStatusIcon({ status, size = "md" }: { status: ClinicStatus; size?: "sm" | "md" }) {
   const Icon = statusIconMap[status];
   const meta = clinicStatusMeta[status];
@@ -22,7 +22,7 @@ export function ClinicStatusIcon({ status, size = "md" }: { status: ClinicStatus
     <span
       role="img"
       aria-label={meta.label}
-      title={meta.label}
+      title={`${meta.label} — ${meta.description}`}
       className={`inline-flex ${badgeSize} shrink-0 items-center justify-center rounded-full`}
       style={{ backgroundColor: meta.color }}
     >
@@ -36,13 +36,16 @@ export function ClinicStatusLegend({ statuses: shown }: { statuses?: Set<ClinicS
   const statuses = (Object.keys(clinicStatusMeta) as ClinicStatus[]).filter((s) => !shown || shown.has(s));
 
   return (
-    <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500">
+    <dl className="grid gap-x-6 gap-y-3 text-xs sm:grid-cols-2 lg:grid-cols-4">
       {statuses.map((status) => (
-        <div key={status} className="flex items-center gap-1.5">
+        <div key={status} className="flex items-start gap-2">
           <ClinicStatusIcon status={status} size="sm" />
-          <span>{clinicStatusMeta[status].label}</span>
+          <div>
+            <dt className="font-semibold text-slate-700">{clinicStatusMeta[status].label}</dt>
+            <dd className="text-slate-500">{clinicStatusMeta[status].description}</dd>
+          </div>
         </div>
       ))}
-    </div>
+    </dl>
   );
 }

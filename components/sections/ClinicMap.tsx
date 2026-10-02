@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -88,8 +88,9 @@ function ClinicLayer({ clinics, selectedClinic, onSelect }: Pick<ClinicMapProps,
   const [zoom, setZoom] = useState(() => map.getZoom());
   useMapEvents({ zoomend: () => setZoom(map.getZoom()) });
 
-  const renderer = useMemo(() => L.canvas({ padding: 0.5 }), []);
-  const group = useMemo(() => L.layerGroup(), []);
+  // Renderer and layer belong to one map instance. They're rebuilt if react-leaflet recreates the map
+  // (e.g. React re-running effects in development), instead of re-attaching objects tied to a removed map.
+  const layer = useRef<{ group: L.LayerGroup; renderer: L.Canvas } | null>(null);
   const markers = useRef(new Map<string, L.CircleMarker>());
   // Last style applied per marker, so a search only repaints markers whose look changed.
   const styleKeys = useRef(new Map<string, string>());
@@ -101,15 +102,23 @@ function ClinicLayer({ clinics, selectedClinic, onSelect }: Pick<ClinicMapProps,
   }, [onSelect]);
 
   useEffect(() => {
-    group.addTo(map);
+    const group = L.layerGroup().addTo(map);
+    layer.current = { group, renderer: L.canvas({ padding: 0.5 }) };
+    const markerMap = markers.current;
+    const styleMap = styleKeys.current;
     return () => {
       group.remove();
+      layer.current = null;
+      markerMap.clear();
+      styleMap.clear();
     };
-  }, [group, map]);
+  }, [map]);
 
   // Add markers for new clinics and drop ones that disappeared; existing markers are reused across searches.
   useEffect(() => {
     clinicById.current = new Map(clinics.map((c) => [c.id, c]));
+    if (!layer.current) return;
+    const { group, renderer } = layer.current;
 
     for (const clinic of clinics) {
       if (clinic.lat === null || clinic.lng === null || markers.current.has(clinic.id)) continue;
@@ -128,7 +137,7 @@ function ClinicLayer({ clinics, selectedClinic, onSelect }: Pick<ClinicMapProps,
         styleKeys.current.delete(id);
       }
     }
-  }, [clinics, group, renderer]);
+  }, [clinics, map]);
 
   useEffect(() => {
     for (const [id, marker] of markers.current) {
@@ -146,7 +155,7 @@ function ClinicLayer({ clinics, selectedClinic, onSelect }: Pick<ClinicMapProps,
       if (clinicById.current.get(id)?.featured) marker.bringToFront();
     }
     if (selectedClinic) markers.current.get(selectedClinic)?.bringToFront();
-  }, [clinics, selectedClinic, zoom]);
+  }, [clinics, selectedClinic, zoom, map]);
 
   useEffect(() => {
     if (selectedClinic) markers.current.get(selectedClinic)?.openPopup();

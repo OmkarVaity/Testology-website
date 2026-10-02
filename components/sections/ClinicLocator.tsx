@@ -1,9 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
-import { Search, Loader2, X, LocateFixed, Navigation, Phone } from "lucide-react";
-import { decodeClinic, directionsUrl, type Clinic, type ClinicStatus, type CompactClinic } from "@/content/clinics";
+import { Search, Loader2, X, LocateFixed, Navigation, Phone, Link2, Check, Stethoscope } from "lucide-react";
+import {
+  decodeClinic,
+  directionsUrl,
+  matchesFilters,
+  siteTypeOptions,
+  type Clinic,
+  type ClinicStatus,
+  type CompactClinic,
+  type SiteTypeFilter,
+} from "@/content/clinics";
 import { geocodeAddress, haversineMiles } from "@/lib/geo";
 import { ClinicStatusIcon, ClinicStatusLegend } from "./ClinicStatusIcon";
 import type { MappableClinic } from "./ClinicMap";
@@ -19,27 +28,78 @@ const ClinicMap = dynamic(() => import("./ClinicMap"), {
 
 const RADIUS_OPTIONS = [10, 25, 50, 100] as const;
 type Radius = (typeof RADIUS_OPTIONS)[number] | "any";
+const DEFAULT_RADIUS: Radius = 50;
 
 const PAGE_SIZE = 25;
 /** Cap on how many results the map zooms to fit, so a wide radius doesn't zoom out to the whole region. */
 const MAX_FIT_CLINICS = 15;
 
+const NOT_FOUND = "We couldn't find that location. Try a zip code, a city and state, or a full street address.";
+const LOOKUP_FAILED = "Location lookup failed. Please try again in a moment.";
+
 type UserLocation = { lat: number; lng: number; label: string };
+type Lookup = { query: string; attempt: number; location: UserLocation | null; error?: string };
+
+// The URL is the source of truth for the search, so results can be shared and the back button works:
+//   ?q=75201&radius=25&type=onsite&physicals=1
+// It's read through useSyncExternalStore rather than useSearchParams, which would need a Suspense boundary —
+// and hiding/re-showing that boundary tears down and rebuilds the Leaflet map.
+const URL_CHANGE_EVENT = "clinic-locator:urlchange";
+
+function subscribeToUrl(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  window.addEventListener(URL_CHANGE_EVENT, onChange);
+  return () => {
+    window.removeEventListener("popstate", onChange);
+    window.removeEventListener(URL_CHANGE_EVENT, onChange);
+  };
+}
+
+const getUrlSearch = () => window.location.search;
+const getServerUrlSearch = () => "";
+
+function parseRadius(value: string | null): Radius {
+  if (value === "any") return "any";
+  const n = Number(value);
+  return (RADIUS_OPTIONS as readonly number[]).includes(n) ? (n as Radius) : DEFAULT_RADIUS;
+}
+
+function parseSiteType(value: string | null): SiteTypeFilter {
+  return value === "onsite" || value === "lab" ? value : "all";
+}
 
 export function ClinicLocator() {
+  const urlSearch = useSyncExternalStore(subscribeToUrl, getUrlSearch, getServerUrlSearch);
+  const searchParams = useMemo(() => new URLSearchParams(urlSearch), [urlSearch]);
+  const activeQuery = searchParams.get("q")?.trim() || null;
+  const radius = parseRadius(searchParams.get("radius"));
+  const siteType = parseSiteType(searchParams.get("type"));
+  const physicalsOnly = searchParams.get("physicals") === "1";
+  const filtersActive = siteType !== "all" || physicalsOnly;
+
   const [allClinics, setAllClinics] = useState<Clinic[]>([]);
   const [dataStatus, setDataStatus] = useState<"loading" | "ready" | "error">("loading");
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "locating" | "error">("idle");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-  const [radius, setRadius] = useState<Radius>(50);
+  const [query, setQuery] = useState(activeQuery ?? "");
+  const [lookup, setLookup] = useState<Lookup | null>(null);
+  const [attempt, setAttempt] = useState(0);
+  // "Use my location" is kept out of the URL on purpose: coordinates shouldn't end up in shared links.
+  const [geoLocation, setGeoLocation] = useState<UserLocation | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [geoError, setGeoError] = useState("");
   const [selectedClinic, setSelectedClinic] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [copied, setCopied] = useState(false);
 
   const listRef = useRef<HTMLDivElement>(null);
-  // Guards against a slow lookup overwriting the result of a newer one.
-  const requestId = useRef(0);
+
+  // When the URL's search changes underneath us (back/forward), mirror it into the input and reset the list.
+  const [syncedQuery, setSyncedQuery] = useState(activeQuery);
+  if (activeQuery !== syncedQuery) {
+    setSyncedQuery(activeQuery);
+    setQuery(activeQuery ?? "");
+    setSelectedClinic(null);
+    setVisibleCount(PAGE_SIZE);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -61,6 +121,28 @@ export function ClinicLocator() {
     };
   }, []);
 
+  // Geocode whatever search the URL holds; a stale response for an older query is ignored.
+  useEffect(() => {
+    if (!activeQuery) return;
+    let cancelled = false;
+    geocodeAddress(activeQuery).then(
+      (location) => {
+        if (!cancelled) setLookup({ query: activeQuery, attempt, location, error: location ? undefined : NOT_FOUND });
+      },
+      () => {
+        if (!cancelled) setLookup({ query: activeQuery, attempt, location: null, error: LOOKUP_FAILED });
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [activeQuery, attempt]);
+
+  const currentLookup = lookup && lookup.query === activeQuery && lookup.attempt === attempt ? lookup : null;
+  const searching = !!activeQuery && !currentLookup;
+  const userLocation = activeQuery ? (currentLookup?.location ?? null) : geoLocation;
+  const errorMessage = activeQuery ? (currentLookup?.error ?? "") : geoError;
+
   const presentStatuses = useMemo(() => {
     const found = new Set<ClinicStatus>();
     for (const clinic of allClinics) for (const s of clinic.statuses) found.add(s);
@@ -68,14 +150,17 @@ export function ClinicLocator() {
   }, [allClinics]);
 
   const mappableClinics: MappableClinic[] = useMemo(() => {
-    const withDistance = allClinics.map((clinic) => {
-      const distanceMiles =
-        userLocation && clinic.lat !== null && clinic.lng !== null
-          ? haversineMiles(userLocation, { lat: clinic.lat, lng: clinic.lng })
-          : null;
-      const inRange = !userLocation || radius === "any" || (distanceMiles !== null && distanceMiles <= radius);
-      return { ...clinic, distanceMiles, inRange };
-    });
+    const filters = { siteType, physicalsOnly };
+    const withDistance = allClinics
+      .filter((clinic) => matchesFilters(clinic, filters))
+      .map((clinic) => {
+        const distanceMiles =
+          userLocation && clinic.lat !== null && clinic.lng !== null
+            ? haversineMiles(userLocation, { lat: clinic.lat, lng: clinic.lng })
+            : null;
+        const inRange = !userLocation || radius === "any" || (distanceMiles !== null && distanceMiles <= radius);
+        return { ...clinic, distanceMiles, inRange };
+      });
 
     if (userLocation) {
       withDistance.sort((a, b) => (a.distanceMiles ?? Infinity) - (b.distanceMiles ?? Infinity));
@@ -84,20 +169,20 @@ export function ClinicLocator() {
       withDistance.sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
     }
     return withDistance;
-  }, [allClinics, userLocation, radius]);
+  }, [allClinics, userLocation, radius, siteType, physicalsOnly]);
 
   const results = useMemo(() => mappableClinics.filter((c) => c.inRange), [mappableClinics]);
   const nearestOutOfRange = results.length === 0 ? mappableClinics.find((c) => c.distanceMiles !== null) : undefined;
 
   const fitPoints: [number, number][] = useMemo(() => {
-    const located = (list: MappableClinic[]) =>
-      list.filter((c) => c.lat !== null && c.lng !== null).map((c) => [c.lat, c.lng] as [number, number]);
-
     // No search yet: the map shows the whole country.
     if (!userLocation) return [];
 
     const focus = results.length > 0 ? results.slice(0, MAX_FIT_CLINICS) : mappableClinics.slice(0, 3);
-    return [[userLocation.lat, userLocation.lng], ...located(focus)];
+    const located = focus
+      .filter((c) => c.lat !== null && c.lng !== null)
+      .map((c) => [c.lat, c.lng] as [number, number]);
+    return [[userLocation.lat, userLocation.lng], ...located];
   }, [mappableClinics, results, userLocation]);
 
   // Keep the picked clinic visible in the list when it was chosen from the map.
@@ -113,6 +198,27 @@ export function ClinicLocator() {
     }
   }, [selectedClinic]);
 
+  /** Updates the URL's search params; `push` adds a history entry (new search), `replace` doesn't (tweaks). */
+  function updateParams(changes: Record<string, string | null>, mode: "push" | "replace") {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === null) params.delete(key);
+      else params.set(key, value);
+    }
+    const qs = params.toString();
+    const url = qs ? `?${qs}` : window.location.pathname;
+    if (mode === "push") window.history.pushState(null, "", url);
+    else window.history.replaceState(null, "", url);
+    // pushState/replaceState don't fire popstate, so tell the URL store about the change ourselves.
+    window.dispatchEvent(new Event(URL_CHANGE_EVENT));
+  }
+
+  function resetResults() {
+    setSelectedClinic(null);
+    setVisibleCount(PAGE_SIZE);
+    listRef.current?.scrollTo({ top: 0 });
+  }
+
   function handleSelect(id: string) {
     // A marker picked on the map may sit past the current page of the list — reveal it.
     const index = results.findIndex((c) => c.id === id);
@@ -122,85 +228,88 @@ export function ClinicLocator() {
     setSelectedClinic(id);
   }
 
-  function applyLocation(location: UserLocation) {
-    setUserLocation(location);
-    setSelectedClinic(null);
-    setVisibleCount(PAGE_SIZE);
-    setStatus("idle");
-    listRef.current?.scrollTo({ top: 0 });
-  }
-
-  function fail(message: string) {
-    setStatus("error");
-    setErrorMessage(message);
-  }
-
-  async function handleSearch(e: React.FormEvent) {
+  function handleSearch(e: React.FormEvent) {
     e.preventDefault();
-    if (!query.trim()) return;
+    const text = query.trim();
+    if (!text) return;
 
-    const id = ++requestId.current;
-    setStatus("loading");
-    setErrorMessage("");
-
-    try {
-      const result = await geocodeAddress(query.trim());
-      if (id !== requestId.current) return;
-      if (!result) {
-        fail("We couldn't find that location. Try a zip code, a city and state, or a full street address.");
-        return;
-      }
-      applyLocation(result);
-    } catch {
-      if (id === requestId.current) fail("Location lookup failed. Please try again in a moment.");
-    }
+    setGeoLocation(null);
+    setGeoError("");
+    resetResults();
+    if (text === activeQuery) setAttempt((n) => n + 1);
+    else updateParams({ q: text }, "push");
   }
 
   function handleUseMyLocation() {
     if (!("geolocation" in navigator)) {
-      fail("Your browser doesn't support location lookup. Please enter a zip code instead.");
+      setGeoError("Your browser doesn't support location lookup. Please enter a zip code instead.");
       return;
     }
 
-    const id = ++requestId.current;
-    setStatus("locating");
-    setErrorMessage("");
-
+    setLocating(true);
+    setGeoError("");
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        if (id !== requestId.current) return;
+        setLocating(false);
         setQuery("");
-        applyLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          label: "your current location",
-        });
+        setGeoLocation({ lat: position.coords.latitude, lng: position.coords.longitude, label: "your current location" });
+        resetResults();
+        if (activeQuery) updateParams({ q: null }, "push");
       },
       () => {
-        if (id === requestId.current) {
-          fail("We couldn't get your location. Check your browser's location permission, or enter a zip code.");
-        }
+        setLocating(false);
+        setGeoError("We couldn't get your location. Check your browser's location permission, or enter a zip code.");
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 5 * 60 * 1000 },
     );
   }
 
   function handleClear() {
-    requestId.current++;
     setQuery("");
-    setUserLocation(null);
-    setSelectedClinic(null);
-    setVisibleCount(PAGE_SIZE);
-    setStatus("idle");
-    setErrorMessage("");
+    setGeoLocation(null);
+    setGeoError("");
+    resetResults();
+    if (activeQuery) updateParams({ q: null }, "push");
   }
 
-  const busy = status === "loading" || status === "locating";
+  function handleRadius(value: string) {
+    const next = parseRadius(value);
+    setVisibleCount(PAGE_SIZE);
+    updateParams({ radius: next === DEFAULT_RADIUS ? null : String(next) }, "replace");
+  }
+
+  function handleSiteType(value: SiteTypeFilter) {
+    resetResults();
+    updateParams({ type: value === "all" ? null : value }, "replace");
+  }
+
+  function handlePhysicals() {
+    resetResults();
+    updateParams({ physicals: physicalsOnly ? null : "1" }, "replace");
+  }
+
+  function handleClearFilters() {
+    resetResults();
+    updateParams({ type: null, physicals: null }, "replace");
+  }
+
+  async function handleCopyLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard can be blocked (e.g. insecure context); the URL bar still has the link.
+    }
+  }
+
+  const busy = searching || locating;
   const visibleResults = results.slice(0, visibleCount);
+  const noun = (n: number) => (n === 1 ? "clinic" : "clinics");
 
   return (
     <div>
-      <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
+      <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-center">
         <form onSubmit={handleSearch} className="flex flex-1 gap-2 lg:max-w-xl">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -218,7 +327,7 @@ export function ClinicLocator() {
             disabled={busy}
             className="flex h-12 min-w-[92px] items-center justify-center rounded-xl bg-primary-600 px-5 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:opacity-60"
           >
-            {status === "loading" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
+            {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
           </button>
           {userLocation && (
             <button
@@ -239,11 +348,7 @@ export function ClinicLocator() {
             disabled={busy}
             className="flex h-12 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-60 lg:flex-none"
           >
-            {status === "locating" ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <LocateFixed className="h-4 w-4 text-primary-600" />
-            )}
+            {locating ? <Loader2 className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4 text-primary-600" />}
             Use my location
           </button>
 
@@ -251,10 +356,7 @@ export function ClinicLocator() {
             <span className="whitespace-nowrap">Within</span>
             <select
               value={radius}
-              onChange={(e) => {
-                setRadius(e.target.value === "any" ? "any" : (Number(e.target.value) as Radius));
-                setVisibleCount(PAGE_SIZE);
-              }}
+              onChange={(e) => handleRadius(e.target.value)}
               className="h-full bg-transparent font-semibold text-slate-900 focus:outline-none"
             >
               {RADIUS_OPTIONS.map((r) => (
@@ -268,35 +370,87 @@ export function ClinicLocator() {
         </div>
       </div>
 
-      {status === "error" && <p className="mb-4 text-sm text-red-600">{errorMessage}</p>}
-
-      <p className="mb-4 text-sm text-slate-500" aria-live="polite">
-        {userLocation ? (
-          <>
-            <span className="font-semibold text-slate-700">{results.length.toLocaleString()}</span>{" "}
-            {results.length === 1 ? "clinic" : "clinics"} {radius === "any" ? "near" : `within ${radius} mi of`}{" "}
-            <span className="font-medium text-slate-700">{userLocation.label}</span>
-            {results.length > 0 ? ", sorted by distance." : "."}
-          </>
-        ) : dataStatus === "loading" ? (
-          "Loading clinics…"
-        ) : dataStatus === "error" ? (
-          <span className="text-red-600">We couldn&apos;t load the clinic list. Please refresh the page.</span>
-        ) : (
-          <>
-            <span className="font-semibold text-slate-700">{allClinics.length.toLocaleString()}</span>{" "}
-            eScreen-affiliated clinics nationwide. Search to sort them by distance from you.
-          </>
+      <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Filter clinics">
+        <div className="flex rounded-xl border border-slate-200 bg-white p-1">
+          {siteTypeOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => handleSiteType(option.value)}
+              aria-pressed={siteType === option.value}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition sm:text-sm ${
+                siteType === option.value ? "bg-primary-600 text-white" : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={handlePhysicals}
+          aria-pressed={physicalsOnly}
+          className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition sm:text-sm ${
+            physicalsOnly
+              ? "border-primary-600 bg-primary-50 text-primary-700"
+              : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+          }`}
+        >
+          {physicalsOnly ? <Check className="h-4 w-4" /> : <Stethoscope className="h-4 w-4" />}
+          Offers physicals
+        </button>
+        {filtersActive && (
+          <button type="button" onClick={handleClearFilters} className="px-2 text-xs font-semibold text-slate-500 hover:underline">
+            Clear filters
+          </button>
         )}
-      </p>
+      </div>
+
+      {errorMessage && <p className="mb-4 text-sm text-red-600">{errorMessage}</p>}
+
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm text-slate-500" aria-live="polite">
+          {userLocation ? (
+            <>
+              <span className="font-semibold text-slate-700">{results.length.toLocaleString()}</span>{" "}
+              {filtersActive ? `matching ${noun(results.length)}` : noun(results.length)}{" "}
+              {radius === "any" ? "near" : `within ${radius} mi of`}{" "}
+              <span className="font-medium text-slate-700">{userLocation.label}</span>
+              {results.length > 0 ? ", sorted by distance." : "."}
+            </>
+          ) : searching ? (
+            "Finding that location…"
+          ) : dataStatus === "loading" ? (
+            "Loading clinics…"
+          ) : dataStatus === "error" ? (
+            <span className="text-red-600">We couldn&apos;t load the clinic list. Please refresh the page.</span>
+          ) : (
+            <>
+              <span className="font-semibold text-slate-700">{mappableClinics.length.toLocaleString()}</span>{" "}
+              {filtersActive ? "matching" : "eScreen-affiliated"} clinics nationwide. Search to sort them by distance
+              from you.
+            </>
+          )}
+        </p>
+        {activeQuery && userLocation && (
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="flex items-center gap-1.5 text-xs font-semibold text-primary-700 hover:underline"
+          >
+            {copied ? <Check className="h-3.5 w-3.5" /> : <Link2 className="h-3.5 w-3.5" />}
+            {copied ? "Link copied" : "Copy link to these results"}
+          </button>
+        )}
+      </div>
 
       <div className="grid gap-4 lg:h-[780px] lg:grid-cols-[minmax(340px,420px)_1fr]">
         <div className="order-2 flex max-h-[640px] flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm lg:order-1 lg:max-h-none">
           <div ref={listRef} className="relative flex-1 overflow-y-auto">
-            {results.length === 0 && userLocation && (
+            {results.length === 0 && (userLocation || (filtersActive && dataStatus === "ready")) && (
               <div className="p-6 text-center text-sm text-slate-500">
                 <p className="mb-3">
-                  No clinics within {radius} mi.
+                  {userLocation ? `No ${filtersActive ? "matching " : ""}clinics within ${radius} mi.` : "No clinics match these filters."}
                   {nearestOutOfRange?.distanceMiles != null && (
                     <>
                       {" "}
@@ -305,13 +459,26 @@ export function ClinicLocator() {
                     </>
                   )}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setRadius("any")}
-                  className="rounded-lg bg-primary-50 px-4 py-2 font-semibold text-primary-700 hover:bg-primary-100"
-                >
-                  Show all clinics by distance
-                </button>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {userLocation && radius !== "any" && (
+                    <button
+                      type="button"
+                      onClick={() => handleRadius("any")}
+                      className="rounded-lg bg-primary-50 px-4 py-2 font-semibold text-primary-700 hover:bg-primary-100"
+                    >
+                      Show all clinics by distance
+                    </button>
+                  )}
+                  {filtersActive && (
+                    <button
+                      type="button"
+                      onClick={handleClearFilters}
+                      className="rounded-lg border border-slate-200 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50"
+                    >
+                      Clear filters
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -409,7 +576,8 @@ export function ClinicLocator() {
         </div>
       </div>
 
-      <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+      <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">What the icons mean</p>
         <ClinicStatusLegend statuses={presentStatuses} />
       </div>
     </div>
