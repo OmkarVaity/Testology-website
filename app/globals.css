@@ -60,6 +60,17 @@ html {
   }
 }
 
+/* Clinic status marker on directory pages; set `color` inline to the status color. */
+.status-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.3rem;
+  border-radius: 9999px;
+  background-color: currentColor;
+  vertical-align: 0.05rem;
+}
+
 .text-gradient {
   background-image: linear-gradient(
     to right,

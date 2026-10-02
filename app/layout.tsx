@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { StructuredData } from "@/components/StructuredData";
+import { siteConfig } from "@/content/site-config";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -30,6 +31,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  // Resolves relative canonical/Open Graph URLs (e.g. alternates.canonical: "/clinic-locator") to the live domain.
+  metadataBase: new URL(siteConfig.url),
   title: "Testology, Inc. | Drug Testing in Boston",
   description:
     "Testology, Inc. in Boston offers reliable, certified drug testing services, including clinic-based, on-site, and remote collections.",

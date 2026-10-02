@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/content/site-config";
+import { cityPath, getAllCityPages, getAllStates, statePath } from "@/lib/clinic-directory";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
@@ -34,10 +35,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/hipaa-notice",
   ];
 
-  return routes.map((route) => ({
+  const pages: MetadataRoute.Sitemap = routes.map((route) => ({
     url: `${siteConfig.url}${route}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: route === "" ? 1 : 0.7,
   }));
+
+  // Clinic directory: one page per state, plus cities with enough clinics for their own page.
+  const directory: MetadataRoute.Sitemap = [
+    ...getAllStates().map((state) => ({ path: statePath(state), priority: 0.6 })),
+    ...getAllCityPages().map((city) => ({ path: cityPath(city), priority: 0.5 })),
+  ].map(({ path, priority }) => ({
+    url: `${siteConfig.url}${path}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority,
+  }));
+
+  return [...pages, ...directory];
 }
