@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { features } from "@/lib/features";
 import { Search } from "lucide-react";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import { ClinicAreaMap } from "@/components/sections/ClinicAreaMap";
@@ -19,6 +20,7 @@ type Props = { params: Promise<{ state: string }> };
 export const dynamicParams = false;
 
 export function generateStaticParams() {
+  if (!features.clinicLocator) return [];
   return getAllStates().map((state) => ({ state: state.slug }));
 }
 
@@ -39,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function StateClinicsPage({ params }: Props) {
   const state = getState((await params).state);
-  if (!state) notFound();
+  if (!state || !features.clinicLocator) notFound();
 
   const stats = statsFor(state.clinics);
   const cityPages = state.cities.filter((c) => c.hasPage);

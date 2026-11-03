@@ -29,7 +29,7 @@ export function Contact() {
     {
       icon: Mail,
       title: "Email",
-      lines: [siteConfig.contact.examsEmail, siteConfig.contact.wellnessEmail, siteConfig.contact.dispatchEmail],
+      lines: [siteConfig.contact.examsEmail],
     },
   ];
 

@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-import { contactFormSchema } from "@/lib/validations";
+import { formatPhoneNumber, contactFormSchema } from "@/lib/validations";
+import { sendTeamEmail } from "@/lib/team-email";
+import { logToSheet } from "@/lib/sheet-log";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Labels as shown in the contact form's "Service" dropdown.
+const SERVICE_LABELS: Record<string, string> = {
+  "drug-alcohol-testing": "Drug & alcohol testing",
+  "dot-testing": "DOT testing",
+  "blood-profiles": "Blood profiles",
+  "employer-solutions": "Employer solutions",
+  other: "Other",
+};
 
 export async function POST(request: Request) {
   try {
@@ -18,40 +26,42 @@ export async function POST(request: Request) {
 
     const data = parsed.data;
 
-    // Send email notification via Resend
-    const emailResult = await resend.emails.send({
-      from: "Testology Website <onboarding@resend.dev>",
-      to: process.env.CONTACT_FORM_TO_EMAIL ?? "exams@testology.org",
-      subject: `New contact form submission from ${data.name}`,
+    // The message counts as received if it reached the team by email OR was logged to the Google Sheet.
+    // If neither worked, say so — the form then asks the visitor to call, instead of a false "thanks".
+    const emailed = await sendTeamEmail({
+      kind: "Contact",
+      summary: data.name,
+      replyTo: data.email,
       text: `
-Name: ${data.name}
-Email: ${data.email}
-Phone: ${data.phone}
-Service: ${data.service}
-Message: ${data.message}
+New message from the website contact form
+
+Name:    ${data.name}
+Email:   ${data.email}
+Phone:   ${formatPhoneNumber(data.phone)}
+Service: ${SERVICE_LABELS[data.service] ?? data.service}
+
+MESSAGE
+${data.message}
+
+Reply to this email to contact ${data.name} directly.
       `.trim(),
     });
 
-    if (emailResult.error) {
-      console.error("Resend error:", emailResult.error);
-    }
+    const logged = await logToSheet("Contact", {
+      Name: data.name,
+      Email: data.email,
+      Phone: formatPhoneNumber(data.phone),
+      Service: SERVICE_LABELS[data.service] ?? data.service,
+      Message: data.message,
+    });
 
-    // Log to Google Sheet (best-effort — don't fail the whole request if this fails)
-    if (process.env.GOOGLE_SHEET_WEBHOOK_URL) {
-      try {
-        await fetch(process.env.GOOGLE_SHEET_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-      } catch (sheetError) {
-        console.error("Google Sheet logging failed:", sheetError);
-      }
+    if (!emailed && !logged) {
+      return NextResponse.json({ error: "Your message couldn't be delivered" }, { status: 502 });
     }
 
     return NextResponse.json({ status: "success" });
   } catch (error) {
-    console.error("Contact form submission error:", error);
+    console.error("Contact form submission error:", error instanceof Error ? error.message : error);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }

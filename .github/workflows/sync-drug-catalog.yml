@@ -1,0 +1,44 @@
+# Keeps the website's drug catalog in step with the Netlify catalog (testology-menu.netlify.app/drug_catalog).
+# Runs daily, and on demand from GitHub: Actions → "Sync drug catalog" → Run workflow.
+# It commits only when the catalog actually changed; that commit makes Netlify redeploy the site.
+# If the Netlify page looks broken, the import refuses to overwrite anything and this run fails
+# (GitHub emails the repository owner), while the live site keeps its current catalog.
+name: Sync drug catalog
+
+on:
+  schedule:
+    - cron: "0 11 * * *" # every day at 11:00 UTC (6–7 AM Eastern)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-drug-catalog
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The import script only uses Node's built-ins, so no npm install is needed.
+      - name: Import the catalog from Netlify
+        run: node scripts/import-drug-catalog.mjs
+
+      - name: Commit if the catalog changed
+        run: |
+          if git diff --quiet -- content/drug-catalog.json; then
+            echo "Catalog unchanged — nothing to deploy."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/drug-catalog.json
+          git commit -m "Sync drug catalog from Netlify"
+          git push

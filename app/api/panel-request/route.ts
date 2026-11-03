@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
 import { formatPrice, getDrugPanel } from "@/content/drug-catalog";
 import { siteConfig } from "@/content/site-config";
 import { formatPhoneNumber, panelRequestSchema } from "@/lib/validations";
+import { features } from "@/lib/features";
+import { sendTeamEmail } from "@/lib/team-email";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// "Buy now" requests from the drug catalog. Emails the team (same Resend setup as the contact form) with
-// reply-to set to the customer, so staff can answer straight from their inbox. Unlike the contact form, a
-// failed send is reported to the visitor — a purchase request must never be silently dropped.
+// "Buy now" requests from the drug catalog, emailed to the team inbox with reply-to set to the customer,
+// so staff can answer straight from their inbox. A failed send is reported to the visitor — a purchase
+// request must never be silently dropped.
 export async function POST(request: Request) {
+  if (!features.buyNow) return NextResponse.json({ error: "Not available" }, { status: 404 });
   let body: unknown;
   try {
     body = await request.json();
@@ -53,17 +53,13 @@ Notes: ${data.notes || "—"}
 Reply to this email to contact ${data.name} directly.
   `.trim();
 
-  try {
-    const result = await resend.emails.send({
-      from: "Testology Website <onboarding@resend.dev>",
-      to: process.env.CONTACT_FORM_TO_EMAIL ?? siteConfig.contact.examsEmail,
-      replyTo: data.email,
-      subject: `New drug test request: ${panel.name} — ${data.name}`,
-      text,
-    });
-    if (result.error) throw new Error(result.error.message);
-  } catch (error) {
-    console.error("Panel request email failed:", error instanceof Error ? error.message : error);
+  const sent = await sendTeamEmail({
+    kind: "Drug test request",
+    summary: `${panel.name} — ${data.name}`,
+    replyTo: data.email,
+    text,
+  });
+  if (!sent) {
     return NextResponse.json(
       { error: `We couldn't send your request. Please call us at ${siteConfig.contact.tollFree}.` },
       { status: 502 },

@@ -14,6 +14,7 @@ import {
 } from "@/content/drug-catalog";
 import { siteConfig } from "@/content/site-config";
 import { ORDERING_ENABLED, orderUrl } from "@/lib/order-links";
+import { features } from "@/lib/features";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -55,7 +56,7 @@ export default async function DrugPanelPage({ params }: Props) {
   const price = formatPrice(panel.price);
   const target = orderTargetFor(panel);
   const isDot = panel.cat === "DOT & Regulated" && panel.sample !== "Breath";
-  const askHref = `mailto:${siteConfig.contact.wellnessEmail}?subject=${encodeURIComponent(`Question about the ${panel.name} drug panel`)}`;
+  const askHref = `mailto:${siteConfig.contact.examsEmail}?subject=${encodeURIComponent(`Question about the ${panel.name} drug panel`)}`;
   const footnotes = [
     panel.star ? "* Expanded opiates include confirmation for hydrocodone/hydromorphone at specific labs." : null,
     panel.note ?? null,
@@ -145,10 +146,12 @@ export default async function DrugPanelPage({ params }: Props) {
                 </span>
               </p>
             )}
-            <BuyNowButton
-              panel={panel}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white hover:bg-primary-700"
-            />
+            {features.buyNow && (
+              <BuyNowButton
+                panel={panel}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white hover:bg-primary-700"
+              />
+            )}
             {ORDERING_ENABLED && target && (
               <Link
                 href={orderUrl({ serviceId: target.serviceId, panelCode: target.panelCode })}
@@ -158,7 +161,7 @@ export default async function DrugPanelPage({ params }: Props) {
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             )}
-            {target && (
+            {features.clinicLocator && target && (
               <Link
                 href={`/clinic-locator?service=${target.serviceId}`}
                 className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"

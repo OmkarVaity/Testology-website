@@ -1,32 +1,35 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Search } from "lucide-react";
 
-const labs = [
-  { name: "2020 BioLabs INC.", specialty: "Oncology" },
-  { name: "Access Labs", specialty: "Full Service Diagnostic Laboratory" },
-  { name: "Baylor Genetics", specialty: "Genetic Testing" },
-  { name: "Boston Heart Diagnostics", specialty: "Cardiovascular" },
-  { name: "CIMA Sciences", specialty: "Liver Function" },
-  { name: "Cleveland Diagnostics", specialty: "Oncology" },
-  { name: "COMBINEDBrain", specialty: "Neurological Disorders" },
-  { name: "DNA Diagnostics Center", specialty: "DNA Testing" },
-  { name: "Doctor's Data, Inc.", specialty: "Diagnostic Testing" },
-  { name: "Eurofins CellTx", specialty: "Women's Health" },
-  { name: "Fulgent Therapeutics, LLC", specialty: "Full Service Diagnostic Laboratory" },
-  { name: "Guardant Health", specialty: "Oncology" },
-  { name: "Health Outlook", specialty: "Wellness" },
-  { name: "Kihealth Inc.", specialty: "Diabetes Management" },
+// `logo` is a file in public/images/lab-partners/; labs without one show their initials.
+const labs: { name: string; specialty: string; logo?: string }[] = [
+  { name: "2020 BioLabs INC.", specialty: "Oncology", logo: "2020-biolabs.png" },
+  { name: "Access Labs", specialty: "Full Service Diagnostic Laboratory", logo: "access-labs.png" },
+  { name: "Baylor Genetics", specialty: "Genetic Testing", logo: "baylor-genetics.png" },
+  { name: "Boston Heart Diagnostics", specialty: "Cardiovascular", logo: "boston-heart.png" },
+  { name: "CIMA Sciences", specialty: "Liver Function", logo: "cima-sciences.png" },
+  { name: "Cleveland Diagnostics", specialty: "Oncology", logo: "cleveland-diagnostics.png" },
+  { name: "COMBINEDBrain", specialty: "Neurological Disorders", logo: "combinedbrain.png" },
+  { name: "DNA Diagnostics Center", specialty: "DNA Testing", logo: "dna-diagnostics-center.png" },
+  { name: "Doctor's Data, Inc.", specialty: "Diagnostic Testing", logo: "doctors-data.png" },
+  { name: "Eurofins CellTx", specialty: "Women's Health", logo: "eurofins.png" },
+  { name: "Fulgent Therapeutics, LLC", specialty: "Full Service Diagnostic Laboratory", logo: "fulgent.png" },
+  { name: "Galleri", specialty: "Oncology – Multi-Cancer Early Detection", logo: "galleri.png" },
+  { name: "Guardant Health", specialty: "Oncology", logo: "guardant.png" },
+  { name: "Health Outlook", specialty: "Wellness", logo: "health-outlook.png" },
+  { name: "Kihealth Inc.", specialty: "Diabetes Management", logo: "kihealth.png" },
   { name: "Laboratory Management Partners LLC", specialty: "Functional Medicine" },
-  { name: "Natera, Inc.", specialty: "Genetic Testing" },
-  { name: "Naveris", specialty: "Oncology" },
-  { name: "NeoGenomics Laboratories Inc.", specialty: "Oncology" },
-  { name: "Neurocode USA", specialty: "Functional Medicine" },
-  { name: "New Day Diagnostics", specialty: "Oncology" },
-  { name: "Oncosure Testing", specialty: "Oncology" },
-  { name: "Prometheus Laboratories", specialty: "Basic Health" },
-  { name: "Scipher Medicine", specialty: "Autoimmune - RA Treatment" },
+  { name: "Natera, Inc.", specialty: "Genetic Testing", logo: "natera.png" },
+  { name: "Naveris", specialty: "Oncology", logo: "naveris.png" },
+  { name: "NeoGenomics Laboratories Inc.", specialty: "Oncology", logo: "neogenomics.png" },
+  { name: "Neurocode USA", specialty: "Functional Medicine", logo: "neurocode.png" },
+  { name: "New Day Diagnostics", specialty: "Oncology", logo: "new-day-diagnostics.png" },
+  { name: "Oncosure Testing", specialty: "Oncology", logo: "oncosure.png" },
+  { name: "Prometheus Laboratories", specialty: "Basic Health", logo: "prometheus.png" },
+  { name: "Scipher Medicine", specialty: "Autoimmune - RA Treatment", logo: "scipher.png" },
 ];
 
 export function SpecialtyLabDirectory() {
@@ -52,8 +55,8 @@ export function SpecialtyLabDirectory() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-        <div className="grid grid-cols-[auto_1fr_1fr] gap-4 border-b border-slate-100 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          <span className="w-10"></span>
+        <div className="grid grid-cols-[7rem_1fr_1fr] gap-4 border-b border-slate-100 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <span aria-hidden></span>
           <span>Lab / Client Name</span>
           <span>Specialty</span>
         </div>
@@ -66,12 +69,27 @@ export function SpecialtyLabDirectory() {
           filtered.map((lab) => (
             <div
               key={lab.name}
-              className="grid grid-cols-[auto_1fr_1fr] items-center gap-4 border-b border-slate-50 px-5 py-3 last:border-0 hover:bg-slate-50/60"
+              className="grid grid-cols-[7rem_1fr_1fr] items-center gap-4 border-b border-slate-50 px-5 py-3 last:border-0 hover:bg-slate-50/60"
             >
-              {/* TODO: replace with <img src={`/images/lab-partners/${slug}.png`} /> once real logo files are provided */}
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-semibold text-slate-400">
-                {lab.name.slice(0, 2).toUpperCase()}
-              </div>
+              {lab.logo ? (
+                // Wider than the initials badge: wordmark logos (and their taglines) need the room to stay legible.
+                <div className="flex h-11 w-28 items-center">
+                  <Image
+                    src={`/images/lab-partners/${lab.logo}`}
+                    alt={`${lab.name} logo`}
+                    width={224}
+                    height={68}
+                    className="h-auto max-h-11 w-auto max-w-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div
+                  className="flex h-10 w-20 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-semibold text-slate-400"
+                  aria-hidden
+                >
+                  {lab.name.slice(0, 2).toUpperCase()}
+                </div>
+              )}
               <span className="text-sm font-medium text-slate-900">{lab.name}</span>
               <span className="text-sm text-slate-500">{lab.specialty}</span>
             </div>

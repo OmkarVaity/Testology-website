@@ -72,7 +72,6 @@ export function FindUs() {
               Toll-free: {siteConfig.contact.tollFree} (opt. 3)
             </p>
             <p className="text-sm text-bone/80">Direct: {siteConfig.contact.emergencyDispatch}</p>
-            <p className="text-sm text-bone/80">{siteConfig.contact.dispatchEmail}</p>
 
             <div className="mt-4 flex gap-3">
               <a

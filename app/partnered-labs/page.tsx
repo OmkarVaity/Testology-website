@@ -93,7 +93,7 @@ export default function PartneredLabsPage() {
         </h2>
         <p className="mb-6 max-w-2xl text-sm text-slate-500">
           For blood work beyond routine panels, we route samples to specialized labs based on
-          what's ordered — from oncology and genetic testing to cardiovascular and autoimmune
+          what&apos;s ordered — from oncology and genetic testing to cardiovascular and autoimmune
           panels. Search below to see if we work with a specific lab.
         </p>
         <SpecialtyLabDirectory />
@@ -110,20 +110,34 @@ export default function PartneredLabsPage() {
       </section>
 
       <section className="border-t border-slate-100 bg-slate-50">
-        <div className="container-wide py-12">
-          <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
-            Need results routed to a specific lab?
-          </h2>
-          <p className="mb-6 max-w-xl text-sm text-slate-500">
-            Let us know your preferred network and we&apos;ll confirm we can route your sample
-            there.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/30 transition hover:bg-primary-700"
-          >
-            Ask us
-          </Link>
+        <div className="container-wide grid gap-10 py-12 md:grid-cols-2">
+          <div>
+            <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">
+              Need results routed to a specific lab?
+            </h2>
+            <p className="mb-6 max-w-xl text-sm text-slate-500">
+              Let us know your preferred network and we&apos;ll confirm we can route your sample
+              there.
+            </p>
+            <Link
+              href="/contact"
+              className="inline-block rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/30 transition hover:bg-primary-700"
+            >
+              Ask us
+            </Link>
+          </div>
+          <div>
+            <h2 className="font-display-bolt mb-2 text-xl font-semibold text-slate-900">Are you a laboratory?</h2>
+            <p className="mb-6 max-w-xl text-sm text-slate-500">
+              We&apos;re always open to new lab partners. Tell us about your lab and our team will reach out.
+            </p>
+            <Link
+              href="/lab-partnerships"
+              className="inline-block rounded-xl border border-primary-600 px-6 py-3 text-sm font-semibold text-primary-700 transition hover:bg-primary-50"
+            >
+              Become a lab partner
+            </Link>
+          </div>
         </div>
       </section>
     </>

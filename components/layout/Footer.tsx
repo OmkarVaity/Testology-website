@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 import { siteConfig } from "@/content/site-config";
+import { features } from "@/lib/features";
 
 function InstagramIcon() {
   return (
@@ -44,7 +45,8 @@ const footerLinks = {
   ],
   Company: [
     { label: "Partnered Labs", href: "/partnered-labs" },
-    { label: "Clinic Locator", href: "/clinic-locator" },
+    { label: "Lab Partnerships", href: "/lab-partnerships" },
+    ...(features.clinicLocator ? [{ label: "Clinic Locator", href: "/clinic-locator" }] : []),
     { label: "Employer Solutions", href: "/employer-solutions" },
     { label: "Contact", href: "/contact" },
   ],

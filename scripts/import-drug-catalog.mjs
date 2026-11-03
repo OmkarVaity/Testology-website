@@ -7,7 +7,7 @@
 // The Netlify page keeps its data as JavaScript literals at the top of one inline script (CATEGORIES, PANELS,
 // GLOSSARY, then DRUG_FILTERS further down). Only those declarations are evaluated, in an empty sandbox with no
 // globals — none of the page's DOM code runs.
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
@@ -61,12 +61,35 @@ async function main() {
     panels,
   };
 
+  // Leave the file (and its importedAt date) alone when nothing changed, so a scheduled sync only commits —
+  // and the site only rebuilds — when the catalog itself was edited.
+  const previous = await readFile(outPath, "utf-8").then(JSON.parse).catch(() => null);
+  const comparable = (c) => JSON.stringify({ ...c, importedAt: undefined });
+  if (previous && comparable(previous) === comparable(catalog)) {
+    console.log(`No changes — content/drug-catalog.json already matches ${SOURCE_URL} (${panels.length} panels).`);
+    return;
+  }
+
   // One panel per line keeps diffs readable when prices or panels change.
   const { panels: panelList, ...rest } = catalog;
   const head = JSON.stringify(rest, null, 2).replace(/\n}$/, "");
   const body = panelList.map((p) => "    " + JSON.stringify(p)).join(",\n");
   await writeFile(outPath, `${head},\n  "panels": [\n${body}\n  ]\n}\n`, "utf-8");
 
+  if (previous) {
+    const before = new Set(previous.panels.map((p) => p.id));
+    const after = new Set(panels.map((p) => p.id));
+    const added = [...after].filter((id) => !before.has(id));
+    const removed = [...before].filter((id) => !after.has(id));
+    const changed = panels.filter((p) => {
+      const old = previous.panels.find((o) => o.id === p.id);
+      return old && JSON.stringify(old) !== JSON.stringify(p);
+    });
+    console.log(`Changes: ${added.length} added, ${removed.length} removed, ${changed.length} updated.`);
+    if (added.length) console.log("  + " + added.join(", "));
+    if (removed.length) console.log("  - " + removed.join(", "));
+    if (changed.length) console.log("  ~ " + changed.map((p) => p.id).join(", "));
+  }
   console.log(`Imported ${panels.length} panels in ${catalog.categories.length} categories from ${SOURCE_URL}.`);
   console.log(`${panels.filter((p) => p.price).length} priced; ${substances.size} distinct substances; ${data.DRUG_FILTERS.length} drug filter groups.`);
   if (unexplained.length) console.warn("Substances without a glossary entry:", unexplained);

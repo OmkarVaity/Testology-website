@@ -1,3 +1,5 @@
+import { features } from "@/lib/features";
+
 export type NavItem = {
   label: string;
   href: string;
@@ -13,9 +15,8 @@ export const siteConfig = {
     tollFree: "877-211-4447",
     direct: "857-384-9194",
     emergencyDispatch: "617-777-3031",
+    // The one address for every enquiry: shown on the site, and where all website forms are sent.
     examsEmail: "exams@testology.org",
-    dispatchEmail: "dispatch@testologylabs.com",
-    wellnessEmail: "wellness@testologylabs.com",
   },
 
   location: {
@@ -76,7 +77,12 @@ export const siteConfig = {
     { label: "Mobile Phlebotomy", href: "/mobile-phlebotomy" },
     { label: "Event Drug Testing", href: "/event-drug-testing" },
     { label: "Partnered Labs", href: "/partnered-labs" },
-    { label: "Clinic Locator", href: "/clinic-locator" },
-    { label: "eScreen Services", href: "/escreen-services" },
+    { label: "Lab Partnerships", href: "/lab-partnerships" },
+    ...(features.clinicLocator
+      ? [
+          { label: "Clinic Locator", href: "/clinic-locator" },
+          { label: "eScreen Services", href: "/escreen-services" },
+        ]
+      : []),
   ] satisfies NavItem[],
 } as const;

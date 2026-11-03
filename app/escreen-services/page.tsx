@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { ArrowRight, Info } from "lucide-react";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import {
@@ -12,6 +13,7 @@ import {
 } from "@/content/escreen-services";
 import { getAllClinics } from "@/lib/clinic-directory";
 import { ORDERING_ENABLED } from "@/lib/order-links";
+import { features } from "@/lib/features";
 
 export const metadata: Metadata = {
   title: "eScreen Drug Tests, Physicals & Occupational Health Services | Testology, Inc.",
@@ -96,6 +98,8 @@ function ServiceCard({ service, clinicCount }: { service: EscreenService; clinic
 }
 
 export default function EscreenServicesPage() {
+  // Its main action is "Find a clinic", so it launches together with the clinic locator.
+  if (!features.clinicLocator) notFound();
   const clinics = getAllClinics();
   const countFor = (service: EscreenService) => clinics.filter((c) => clinicOffersService(c, service)).length;
   const categories = Object.keys(serviceCategoryMeta) as ServiceCategory[];

@@ -1,7 +1,6 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { OrderFlow } from "@/components/order/OrderFlow";
-import { siteConfig } from "@/content/site-config";
 import { ORDERING_ENABLED } from "@/lib/order-links";
 
 export const metadata: Metadata = {
@@ -14,6 +13,8 @@ export const metadata: Metadata = {
 type Props = { searchParams: Promise<{ service?: string; panel?: string; clinic?: string }> };
 
 export default async function OrderPage({ searchParams }: Props) {
+  // Nothing links here until ordering launches, so the page doesn't exist before then.
+  if (!ORDERING_ENABLED) notFound();
   const { service, panel, clinic } = await searchParams;
 
   return (
@@ -31,23 +32,7 @@ export default async function OrderPage({ searchParams }: Props) {
         </div>
       </div>
       <section className="container-wide max-w-4xl pb-16">
-        {ORDERING_ENABLED ? (
-          <OrderFlow initialServiceId={service} initialPanelCode={panel} initialClinicId={clinic} />
-        ) : (
-          <div className="rounded-2xl border border-slate-100 bg-white p-6 text-sm text-slate-600 shadow-sm">
-            <p className="mb-2 font-display-bolt text-xl font-semibold text-slate-900">Online ordering is coming soon</p>
-            <p className="mb-4">
-              In the meantime, call us at{" "}
-              <a href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`} className="font-semibold text-primary-700">
-                {siteConfig.contact.tollFree}
-              </a>{" "}
-              and we&apos;ll set up your test at the clinic closest to you.
-            </p>
-            <Link href="/clinic-locator" className="font-semibold text-primary-700 hover:underline">
-              Find a clinic near you
-            </Link>
-          </div>
-        )}
+        <OrderFlow initialServiceId={service} initialPanelCode={panel} initialClinicId={clinic} />
       </section>
     </>
   );

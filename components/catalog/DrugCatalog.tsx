@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, FlaskConical, Plus, Scale, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
 import { PanelRequestDialog } from "./PanelRequestDialog";
+import { features } from "@/lib/features";
 import {
   categorySlug,
   drugCategories,
@@ -140,15 +141,17 @@ function PanelCard({
             {comparing ? <Check className="h-3.5 w-3.5" aria-hidden /> : <Plus className="h-3.5 w-3.5" aria-hidden />}
             Compare
           </button>
-          <button
-            type="button"
-            onClick={onBuy}
-            aria-label={`Buy ${panel.name}`}
-            className="flex items-center gap-1 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-primary-700"
-          >
-            <ShoppingCart className="h-3.5 w-3.5" aria-hidden />
-            Buy now
-          </button>
+          {features.buyNow && (
+            <button
+              type="button"
+              onClick={onBuy}
+              aria-label={`Buy ${panel.name}`}
+              className="flex items-center gap-1 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-primary-700"
+            >
+              <ShoppingCart className="h-3.5 w-3.5" aria-hidden />
+              Buy now
+            </button>
+          )}
         </div>
       </div>
     </article>
@@ -500,7 +503,7 @@ export function DrugCatalog() {
       </dialog>
 
       {/* One "Buy now" form shared by every card. */}
-      <PanelRequestDialog panel={buyPanel} onClose={() => setBuyPanel(null)} />
+      {features.buyNow && <PanelRequestDialog panel={buyPanel} onClose={() => setBuyPanel(null)} />}
     </div>
   );
 }

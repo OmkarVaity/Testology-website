@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { features } from "@/lib/features";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
 import { ClinicLocator } from "@/components/sections/ClinicLocator";
 import { DirectoryLinkGrid } from "@/components/sections/ClinicDirectory";
@@ -13,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default function ClinicLocatorPage() {
+  if (!features.clinicLocator) notFound();
   const states = getAllStates();
 
   return (
