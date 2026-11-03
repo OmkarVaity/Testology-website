@@ -104,7 +104,7 @@ export function DirectoryClinicList({ clinics }: { clinics: Clinic[] }) {
               Directions
             </a>
             {ORDERING_ENABLED && (
-              <Link href={orderUrl(clinic.id)} className="font-semibold hover:underline">
+              <Link href={orderUrl({ clinicId: clinic.id })} className="font-semibold hover:underline">
                 Order here
               </Link>
             )}

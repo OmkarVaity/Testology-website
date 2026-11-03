@@ -148,12 +148,23 @@ function formatDate(value: string) {
     : date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export function OrderFlow({ initialServiceId, initialClinicId }: { initialServiceId?: string; initialClinicId?: string }) {
+export function OrderFlow({
+  initialServiceId,
+  initialPanelCode,
+  initialClinicId,
+}: {
+  initialServiceId?: string;
+  /** From "Order this panel" in the drug catalog; ignored unless it's one of the service's panels. */
+  initialPanelCode?: string;
+  initialClinicId?: string;
+}) {
   const { clinics, status: clinicsStatus } = useClinics();
   const [step, setStep] = useState(0);
   const [items, setItems] = useState<Item[]>(() => {
     const service = getService(initialServiceId);
-    return service ? [{ serviceId: service.id, panelCode: service.defaultPanel }] : [];
+    if (!service) return [];
+    const panelCode = service.panels?.some((p) => p.code === initialPanelCode) ? initialPanelCode : service.defaultPanel;
+    return [{ serviceId: service.id, panelCode }];
   });
   const [drugTestReason, setDrugTestReason] = useState("");
   const [healthServiceReason, setHealthServiceReason] = useState("");

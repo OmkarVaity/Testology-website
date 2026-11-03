@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/content/site-config";
 import { cityPath, getAllCityPages, getAllStates, statePath } from "@/lib/clinic-directory";
+import { drugPanels } from "@/content/drug-catalog";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
@@ -43,8 +44,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === "" ? 1 : 0.7,
   }));
 
-  // Clinic directory: one page per state, plus cities with enough clinics for their own page.
+  // Drug catalog panel pages, plus the clinic directory: one page per state and cities with enough clinics.
   const directory: MetadataRoute.Sitemap = [
+    ...drugPanels.map((panel) => ({ path: `/catalog/drugs/${panel.id}`, priority: 0.6 })),
     ...getAllStates().map((state) => ({ path: statePath(state), priority: 0.6 })),
     ...getAllCityPages().map((city) => ({ path: cityPath(city), priority: 0.5 })),
   ].map(({ path, priority }) => ({

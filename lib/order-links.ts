@@ -8,10 +8,11 @@
 export const ORDERING_ENABLED =
   process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_ORDERING_ENABLED === "true";
 
-/** Link into the order flow with a clinic (and optionally a test) preselected. */
-export function orderUrl(clinicId?: string, serviceId?: string): string {
+/** Link into the order flow with a clinic, test and/or panel preselected. */
+export function orderUrl({ clinicId, serviceId, panelCode }: { clinicId?: string; serviceId?: string; panelCode?: string } = {}): string {
   const params = new URLSearchParams();
   if (serviceId) params.set("service", serviceId);
+  if (serviceId && panelCode) params.set("panel", panelCode);
   if (clinicId) params.set("clinic", clinicId);
   const qs = params.toString();
   return qs ? `/order?${qs}` : "/order";

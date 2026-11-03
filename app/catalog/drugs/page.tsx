@@ -1,49 +1,27 @@
 import type { Metadata } from "next";
 import { ServicePageHeader } from "@/components/sections/ServicePageHeader";
-import { ExternalLink } from "lucide-react";
+import { DrugCatalog } from "@/components/catalog/DrugCatalog";
+import { drugPanels } from "@/content/drug-catalog";
 
 export const metadata: Metadata = {
-  title: "Drug Testing Catalog | Testology, Inc.",
-  description:
-    "Browse our full drug and alcohol testing catalog — urine, hair, and breath panels with pricing.",
+  title: "Drug Testing Catalog — Urine, Hair, Oral Fluid & Breath Panels | Testology, Inc.",
+  description: `Browse ${drugPanels.length} drug testing panels with pricing — urine, hair, oral fluid and breath alcohol. Filter by the exact drugs you need to test for and compare panels side by side.`,
+  alternates: { canonical: "/catalog/drugs" },
 };
-
-const CATALOG_URL = "https://testology-menu.netlify.app/drug_catalog";
 
 export default function DrugCatalogPage() {
   return (
     <>
       <ServicePageHeader
-        eyebrow="Live catalog"
-        title="Drug testing catalog"
-        tagline="Urine, hair & breath alcohol panels"
-        intro="Browse our full drug and alcohol testing catalog below. This updates automatically whenever we add or change panels — no need to check back here for a separate version."
+        eyebrow="Drug testing catalog"
+        title="Find the right drug test"
+        tagline="Urine, hair, oral fluid & breath alcohol panels"
+        intro={`Browse all ${drugPanels.length} panels, filter by the specific drugs you need to test for, and compare up to three side by side.`}
+        iconName="FlaskConical"
       />
 
-      <section className="container-wide py-10">
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm text-slate-500">
-            Having trouble viewing the catalog below?
-          </p>
-          <a
-            href={CATALOG_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 hover:text-primary-700"
-          >
-            Open full catalog in new tab
-            <ExternalLink className="h-3.5 w-3.5" />
-          </a>
-        </div>
-
-        <div className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
-          <iframe
-            src={CATALOG_URL}
-            title="Testology Drug Testing Catalog"
-            className="h-[900px] w-full"
-            loading="lazy"
-          />
-        </div>
+      <section className="container-wide pb-16">
+        <DrugCatalog />
       </section>
     </>
   );

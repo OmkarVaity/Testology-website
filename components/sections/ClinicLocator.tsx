@@ -552,7 +552,7 @@ export function ClinicLocator() {
                     </a>
                     {ORDERING_ENABLED && (
                       <Link
-                        href={orderUrl(clinic.id, service?.id)}
+                        href={orderUrl({ clinicId: clinic.id, serviceId: service?.id })}
                         className="ml-auto rounded-lg bg-primary-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-primary-700"
                       >
                         Order here

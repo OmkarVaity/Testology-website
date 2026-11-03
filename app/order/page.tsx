@@ -11,10 +11,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-type Props = { searchParams: Promise<{ service?: string; clinic?: string }> };
+type Props = { searchParams: Promise<{ service?: string; panel?: string; clinic?: string }> };
 
 export default async function OrderPage({ searchParams }: Props) {
-  const { service, clinic } = await searchParams;
+  const { service, panel, clinic } = await searchParams;
 
   return (
     <>
@@ -32,7 +32,7 @@ export default async function OrderPage({ searchParams }: Props) {
       </div>
       <section className="container-wide max-w-4xl pb-16">
         {ORDERING_ENABLED ? (
-          <OrderFlow initialServiceId={service} initialClinicId={clinic} />
+          <OrderFlow initialServiceId={service} initialPanelCode={panel} initialClinicId={clinic} />
         ) : (
           <div className="rounded-2xl border border-slate-100 bg-white p-6 text-sm text-slate-600 shadow-sm">
             <p className="mb-2 font-display-bolt text-xl font-semibold text-slate-900">Online ordering is coming soon</p>

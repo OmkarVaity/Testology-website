@@ -79,7 +79,7 @@ function popupContent(clinic: MappableClinic): HTMLElement {
   root.append(links);
   if (ORDERING_ENABLED) {
     const order = el("a", "mt-2 inline-block rounded-lg bg-primary-600 px-3 py-1 text-xs font-semibold !text-white", "Order a test here") as HTMLAnchorElement;
-    order.href = orderUrl(clinic.id);
+    order.href = orderUrl({ clinicId: clinic.id });
     root.append(order);
   }
   return root;
