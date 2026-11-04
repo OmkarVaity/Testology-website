@@ -12,11 +12,6 @@ const photos = [
     caption: "Waiting area",
   },
   {
-    src: "/images/clinic/treatment-room.jpg",
-    alt: "Testology's Brighton clinic treatment room",
-    caption: "Treatment room",
-  },
-  {
     src: "/images/clinic/wellness-menu.jpg",
     alt: "Testology's Brighton clinic wellness and panel menu boards",
     caption: "Wellness & panel menu",
@@ -47,7 +42,7 @@ export function FacilityGallery() {
           </p>
         </motion.div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
           {photos.map((photo, i) => (
             <motion.button
               key={photo.src}
