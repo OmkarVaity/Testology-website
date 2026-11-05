@@ -29,9 +29,9 @@ export const siteConfig = {
 
   hours: {
     weekday: "Monday–Friday: 9AM–6PM",
-    saturday: "Closed (July & August 2026)",
+    saturday: "9AM–2PM",
     lastWalkIn:
-      "5:30 PM last walk-in for urine drug test. All other services are by appointments only.",
+      "Last walk-in for urine drug tests: 5:30 PM weekdays, 1:30 PM Saturday. All other services are by appointment only.",
   },
 
   social: {
@@ -61,7 +61,7 @@ export const siteConfig = {
         { label: "Specialty Blood Panels", href: "/blood-profiles/specialty-panels" },
       ],
     },
-    { label: "Catalog & Pricing", href: "/catalog" },
+    { label: "Catalog & Pricing", href: "/catalog/drugs" },
     { label: "Contact", href: "/contact" },
   ] satisfies NavItem[],
 

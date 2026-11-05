@@ -23,6 +23,12 @@ export function StructuredData() {
         opens: "09:00",
         closes: "18:00",
       },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Saturday"],
+        opens: "09:00",
+        closes: "14:00",
+      },
     ],
     sameAs: [siteConfig.social.instagram, siteConfig.social.facebook, siteConfig.social.linkedin],
   };

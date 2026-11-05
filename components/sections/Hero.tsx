@@ -43,7 +43,7 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="font-display-bolt text-balance text-4xl font-bold leading-[1.1] text-slate-900 sm:text-5xl lg:text-6xl"
             >
-              Elevate to <span className="text-gradient">Evaluate</span> and Embark
+              Normalized Scientific <span className="text-gradient">Precision</span>
             </motion.h1>
 
             <motion.p
@@ -92,7 +92,7 @@ export function Hero() {
             >
               <div className="flex items-center gap-2 text-sm text-slate-600">
                 <Clock className="h-4 w-4 text-primary-600" />
-                <span>Walk-ins welcome until 5:30 PM</span>
+                <span>Walk-ins until 5:30 PM (Sat 1:30 PM)</span>
               </div>
               <div className="h-4 w-px bg-slate-300" />
               <div className="flex items-center gap-2 text-sm text-slate-600">

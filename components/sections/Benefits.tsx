@@ -12,7 +12,7 @@ const benefits = [
   {
     icon: Clock,
     title: "Open 6 Days a Week",
-    desc: "Monday through Friday 9AM–6PM, with Saturday availability. 24/7 on-site emergency services available.",
+    desc: "Monday through Friday 9AM–6PM, and Saturday 9AM–2PM. 24/7 on-site emergency services available.",
   },
   {
     icon: MapPin,

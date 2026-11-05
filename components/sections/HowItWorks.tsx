@@ -7,7 +7,7 @@ const steps = [
   {
     icon: CalendarClock,
     title: "Book or Walk In",
-    desc: "Schedule an appointment online or simply walk in for urine drug tests (last walk-in at 5:30 PM). All other services by appointment.",
+    desc: "Schedule an appointment online or simply walk in for urine drug tests (last walk-in 5:30 PM weekdays, 1:30 PM Saturday). All other services by appointment.",
   },
   {
     icon: ClipboardCheck,

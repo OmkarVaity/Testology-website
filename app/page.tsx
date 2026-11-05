@@ -5,7 +5,6 @@ import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { Affiliations } from "@/components/sections/Affiliations";
 import { ClinicPreview } from "@/components/sections/ClinicPreview";
-import { FacilityGallery } from "@/components/sections/FacilityGallery";
 import { Services } from "@/components/sections/Services";
 import { FeaturedTests } from "@/components/sections/FeaturedTests";
 import { DotTesting } from "@/components/sections/DotTesting";
@@ -23,7 +22,7 @@ export default function HomePage() {
       <DotTesting />
       <QuickInfoStrip />
       <ClinicPreview />
-      <FacilityGallery />
+      {/* Clinic photo gallery ("Take a look inside") is hidden for now; add <FacilityGallery /> back here to show it. */}
       <HowItWorks />
       <Benefits />
       <Affiliations />

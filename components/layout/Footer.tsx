@@ -77,7 +77,7 @@ export function Footer() {
               />
               <div>
                 <p className="font-display-bolt text-xl font-bold">Testology</p>
-                <p className="text-xs text-slate-500">ELEVATE TO EVALUATE</p>
+                <p className="text-xs text-slate-500">NORMALIZED SCIENTIFIC PRECISION</p>
               </div>
             </div>
             <p className="mb-6 max-w-sm text-sm leading-relaxed text-slate-400">

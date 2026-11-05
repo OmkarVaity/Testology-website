@@ -67,8 +67,7 @@ export default async function DrugPanelPage({ params }: Props) {
       <DirectoryBreadcrumbs
         crumbs={[
           { label: "Home", href: "/" },
-          { label: "Catalog", href: "/catalog" },
-          { label: "Drug testing", href: "/catalog/drugs" },
+          { label: "Drug testing catalog", href: "/catalog/drugs" },
           { label: panel.name, href: `/catalog/drugs/${panel.id}` },
         ]}
       />

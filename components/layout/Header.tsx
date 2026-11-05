@@ -52,7 +52,8 @@ export function Header() {
             : "bg-white/60 backdrop-blur-md"
         }`}
       >
-        <div className="container-wide flex h-16 items-center justify-between gap-6 lg:h-20">
+        {/* Wider than .container-wide so the logo, full menu, phone number and button fit on one row. */}
+        <div className="mx-auto flex h-16 w-full max-w-[88rem] items-center justify-between gap-6 px-4 sm:px-6 lg:h-20 lg:px-8">
           <Link href="/" className="group flex flex-shrink-0 items-center gap-2.5">
             <Image
               src="/logo.png"
@@ -66,12 +67,13 @@ export function Header() {
                 Testology
               </span>
               <span className="whitespace-nowrap text-[10px] font-medium tracking-wide text-slate-500 lg:text-xs">
-                ELEVATE TO EVALUATE
+                NORMALIZED SCIENTIFIC PRECISION
               </span>
             </div>
           </Link>
 
-          <nav className="hidden shrink-0 items-center gap-4 lg:flex xl:gap-6">
+          {/* Full menu from 1280px; below that it's in the ☰ menu (it doesn't fit next to the logo). */}
+          <nav className="hidden shrink-0 items-center gap-4 xl:flex">
             {siteConfig.primaryNav.map((link) =>
               link.children ? (
                 <div
@@ -87,7 +89,7 @@ export function Header() {
                     href={link.href}
                     aria-haspopup="true"
                     aria-expanded={openMenu === link.label}
-                    className="nav-link flex items-center gap-1 whitespace-nowrap py-2 text-[13px] xl:text-sm"
+                    className="nav-link flex items-center gap-1 whitespace-nowrap py-2 text-[13px]"
                   >
                     {link.label}
                     <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />
@@ -118,7 +120,7 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="nav-link whitespace-nowrap py-2 text-[13px] xl:text-sm"
+                  className="nav-link whitespace-nowrap py-2 text-[13px]"
                 >
                   {link.label}
                 </Link>
@@ -136,7 +138,7 @@ export function Header() {
               <button
                 aria-haspopup="true"
                 aria-expanded={openMenu === "more"}
-                className="nav-link flex items-center gap-1 whitespace-nowrap py-2 text-[13px] xl:text-sm"
+                className="nav-link flex items-center gap-1 whitespace-nowrap py-2 text-[13px]"
               >
                 More
                 <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />
@@ -165,10 +167,11 @@ export function Header() {
             </div>
           </nav>
 
-          <div className="ml-2 hidden flex-shrink-0 items-center gap-4 lg:flex">
+          {/* ml-auto keeps the button beside the ☰ button while the menu is collapsed (1024–1279px). */}
+          <div className="ml-auto hidden flex-shrink-0 items-center gap-4 lg:flex xl:ml-2">
             <a
               href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`}
-              className="hidden items-center whitespace-nowrap text-sm font-semibold text-slate-700 transition-colors hover:text-primary-600 xl:flex"
+              className="hidden items-center whitespace-nowrap text-sm font-semibold text-slate-700 transition-colors hover:text-primary-600 min-[1400px]:flex"
             >
               <Phone className="mr-2 h-4 w-4 flex-shrink-0" />
               <span>{siteConfig.contact.tollFree}</span>
@@ -181,7 +184,7 @@ export function Header() {
           </div>
 
           <button
-            className="p-2 text-slate-700 lg:hidden"
+            className="p-2 text-slate-700 xl:hidden"
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -196,7 +199,7 @@ export function Header() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="overflow-hidden border-t border-slate-100 bg-white lg:hidden"
+              className="overflow-hidden border-t border-slate-100 bg-white xl:hidden"
             >
               <div className="container-wide flex flex-col gap-1 py-4">
                 {siteConfig.primaryNav.map((link) => (

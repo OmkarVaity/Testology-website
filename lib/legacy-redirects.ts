@@ -27,7 +27,7 @@ const productRedirects: [string, string][] = [
   ["9-panel-drug-test", panel("9-panel-standard")],
   ["10-panel-drug-test", panel("10-panel-standard")],
   ["10dsp-exp-opi-fent-phn", panel("10-panel-extended-with-fentanyl")],
-  ["initial-male-panel", "/catalog/panels"],
+  ["initial-male-panel", "/blood-profiles"],
 ];
 
 // "rapid-10a" etc. were eCup+ cups; send each to its own page when the new catalog has it.
@@ -97,15 +97,16 @@ const pageRedirects: [string, string][] = [
   ["/copy-2-of-annual-health-screenings-/:rest*", "/blood-profiles"],
   ["/health-screenings", "/blood-profiles"],
   ["/service-page/blood-tests", "/blood-profiles"],
-  ["/copy-of-semaglutide-panel", "/catalog/peptides"],
-  ["/copy-of-semaglutide-panel-1", "/catalog/peptides"],
-  ["/copy-of-semaglutide-panel-desc", "/catalog/peptides"],
-  ["/copy-of-semaglutide-panel-desc-1", "/catalog/peptides"],
-  ["/copy-of-peptide-male-panel", "/catalog/peptides"],
-  ["/copy-of-peptide-male-panel-desc", "/catalog/peptides"],
-  ["/copy-of-peptide-male-panel-desc-1", "/catalog/peptides"],
-  ["/peptide-male-panel-description", "/catalog/peptides"],
-  // Individual blood panel pages (STD, cancer, cardio, hormones, nutrition, …) → the blood panel catalog.
+  ["/copy-of-semaglutide-panel", "/catalog/drugs"],
+  ["/copy-of-semaglutide-panel-1", "/catalog/drugs"],
+  ["/copy-of-semaglutide-panel-desc", "/catalog/drugs"],
+  ["/copy-of-semaglutide-panel-desc-1", "/catalog/drugs"],
+  ["/copy-of-peptide-male-panel", "/catalog/drugs"],
+  ["/copy-of-peptide-male-panel-desc", "/catalog/drugs"],
+  ["/copy-of-peptide-male-panel-desc-1", "/catalog/drugs"],
+  ["/peptide-male-panel-description", "/catalog/drugs"],
+  // Individual blood panel pages (STD, cancer, cardio, hormones, nutrition, …) → Blood Profiles. (The blood panel
+  // and peptide catalogs are offline; old peptide pages go to the drug testing catalog.)
   ...[
     "/basic-cancer-panel-female", "/basic-std-panel", "/basic-std-desc/:rest*", "/cancer-panels", "/cancer-testing",
     "/comprehensive-std-panel", "/desc-pages/:rest*", "/desc-pages-:n/:rest*", "/diabetes-testing-panels",
@@ -125,7 +126,7 @@ const pageRedirects: [string, string][] = [
     "/copy-of-initial-male-panel-description", "/copy-of-male-hormone-a-panel", "/copy-of-male-hormone-a-panel-desc-2",
     "/copy-of-moms", "/copy-of-nutritional-metals-desc", "/copy-of-nutritional-metals-urine-panel",
     "/copy-of-saliva-hormone-deluxe", "/copy-of-saliva-hormone-supreme", "/copy-of-std", "/copy-of-std-1",
-  ].map((source): [string, string] => [source, "/catalog/panels"]),
+  ].map((source): [string, string] => [source, "/blood-profiles"]),
 
   // Wix bookings services
   ["/service-page/physicals", "/physicals"],
@@ -137,12 +138,12 @@ const pageRedirects: [string, string][] = [
   ["/service-page/x-rays-lab-test", "/contact"],
 
   // Duplicates and leftovers from Wix templates
-  ["/category/all-products", "/catalog"],
+  ["/category/all-products", "/catalog/drugs"],
   ["/copy-of-contact", "/contact"],
   ["/inquiry-services-page", "/contact"],
   ["/copy-of-employer-solutions", "/employer-solutions"],
   ["/copy-of-partnered-labs", "/partnered-labs"],
-  ["/copy-of-special-monthly-offer", "/catalog"],
+  ["/copy-of-special-monthly-offer", "/catalog/drugs"],
   ["/projects-1/:rest*", "/"],
 ];
 

@@ -4,6 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import { Search } from "lucide-react";
 
+// Logo column on/off. Set to true to bring the logos back (the files are still in public/images/lab-partners/).
+const SHOW_LOGOS = true;
+
 // `logo` is a file in public/images/lab-partners/; labs without one show their initials.
 const labs: { name: string; specialty: string; logo?: string }[] = [
   { name: "2020 BioLabs INC.", specialty: "Oncology", logo: "2020-biolabs.png" },
@@ -32,6 +35,9 @@ const labs: { name: string; specialty: string; logo?: string }[] = [
   { name: "Scipher Medicine", specialty: "Autoimmune - RA Treatment", logo: "scipher.png" },
 ];
 
+// Written out in full (not built from pieces) so Tailwind generates both classes.
+const columns = SHOW_LOGOS ? "grid-cols-[7rem_1fr_1fr]" : "grid-cols-2";
+
 export function SpecialtyLabDirectory() {
   const [query, setQuery] = useState("");
 
@@ -55,8 +61,10 @@ export function SpecialtyLabDirectory() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-        <div className="grid grid-cols-[7rem_1fr_1fr] gap-4 border-b border-slate-100 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          <span aria-hidden></span>
+        <div
+          className={`grid ${columns} gap-4 border-b border-slate-100 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500`}
+        >
+          {SHOW_LOGOS && <span aria-hidden></span>}
           <span>Lab / Client Name</span>
           <span>Specialty</span>
         </div>
@@ -69,9 +77,9 @@ export function SpecialtyLabDirectory() {
           filtered.map((lab) => (
             <div
               key={lab.name}
-              className="grid grid-cols-[7rem_1fr_1fr] items-center gap-4 border-b border-slate-50 px-5 py-3 last:border-0 hover:bg-slate-50/60"
+              className={`grid ${columns} items-center gap-4 border-b border-slate-50 px-5 py-3 last:border-0 hover:bg-slate-50/60`}
             >
-              {lab.logo ? (
+              {!SHOW_LOGOS ? null : lab.logo ? (
                 // Wider than the initials badge: wordmark logos (and their taglines) need the room to stay legible.
                 <div className="flex h-11 w-28 items-center">
                   <Image

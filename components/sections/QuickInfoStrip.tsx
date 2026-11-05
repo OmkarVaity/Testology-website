@@ -16,7 +16,7 @@ export function QuickInfoStrip() {
     {
       icon: Clock,
       label: "Hours",
-      value: "Mon–Fri, 9AM–6PM",
+      value: "Mon–Fri 9AM–6PM, Sat 9AM–2PM",
       href: "/contact",
     },
     {
