@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Check, FlaskConical, Plus, Scale, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
 import { PanelRequestDialog } from "./PanelRequestDialog";
 import { features } from "@/lib/features";
+import { useNetlifyBadgeOffset } from "@/lib/netlify-badge";
 import {
   categorySlug,
   drugCategories,
@@ -170,6 +171,7 @@ export function DrugCatalog() {
   );
 
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const badgeOffset = useNetlifyBadgeOffset();
   const [buyPanel, setBuyPanel] = useState<DrugPanel | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [chipQuery, setChipQuery] = useState("");
@@ -447,9 +449,9 @@ export function DrugCatalog() {
         </div>
       </dialog>
 
-      {/* Compare tray */}
+      {/* Compare tray (raised above the Netlify badge while it's on the page, so "Compare now" isn't covered) */}
       {compareIds.length > 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 shadow-[0_-4px_20px_rgba(15,23,42,0.08)] backdrop-blur">
+        <div style={{ bottom: badgeOffset }} className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 shadow-[0_-4px_20px_rgba(15,23,42,0.08)] backdrop-blur">
           <div className="container-wide flex flex-wrap items-center gap-2 py-3">
             <Scale className="h-5 w-5 text-primary-600" aria-hidden />
             <span className="text-sm font-semibold text-slate-700">
@@ -473,7 +475,7 @@ export function DrugCatalog() {
               type="button"
               onClick={() => compareDialog.current?.showModal()}
               disabled={compareIds.length < 2}
-              className="rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50"
+              className="min-h-10 rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50"
             >
               {compareIds.length < 2 ? "Add one more to compare" : "Compare now"}
             </button>
