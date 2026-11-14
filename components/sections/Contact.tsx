@@ -5,8 +5,13 @@ import { MapPin, Clock, Phone, Mail } from "lucide-react";
 import { siteConfig } from "@/content/site-config";
 import { ContactForm } from "./ContactForm";
 
+// A line is plain text, or a label + value that's a tap-to-call / tap-to-email link (what phone users expect).
+type Line = string | { label?: string; value: string; href: string };
+
+const tel = (number: string) => `tel:+1${number.replace(/-/g, "")}`;
+
 export function Contact() {
-  const contactInfo = [
+  const contactInfo: { icon: typeof MapPin; title: string; lines: Line[] }[] = [
     {
       icon: MapPin,
       title: "Brighton Clinic",
@@ -21,15 +26,19 @@ export function Contact() {
       icon: Phone,
       title: "Phone",
       lines: [
-        `Toll-Free: ${siteConfig.contact.tollFree}`,
-        `Direct: ${siteConfig.contact.direct}`,
-        `24hr Emergency: ${siteConfig.contact.emergencyDispatch}`,
+        { label: "Toll-Free", value: siteConfig.contact.tollFree, href: tel(siteConfig.contact.tollFree) },
+        { label: "Direct", value: siteConfig.contact.direct, href: tel(siteConfig.contact.direct) },
+        {
+          label: "24hr Emergency",
+          value: siteConfig.contact.emergencyDispatch,
+          href: tel(siteConfig.contact.emergencyDispatch),
+        },
       ],
     },
     {
       icon: Mail,
       title: "Email",
-      lines: [siteConfig.contact.examsEmail],
+      lines: [{ value: siteConfig.contact.examsEmail, href: `mailto:${siteConfig.contact.examsEmail}` }],
     },
   ];
 
@@ -75,11 +84,25 @@ export function Contact() {
                     {info.title}
                   </h3>
                   <div className="space-y-0.5">
-                    {info.lines.map((line) => (
-                      <p key={line} className="text-sm text-slate-500">
-                        {line}
-                      </p>
-                    ))}
+                    {info.lines.map((line) =>
+                      typeof line === "string" ? (
+                        <p key={line} className="text-sm text-slate-500">
+                          {line}
+                        </p>
+                      ) : (
+                        // Each number gets its own full-height row, so it's easy to tap on a phone.
+                        <a
+                          key={line.href}
+                          href={line.href}
+                          className="flex min-h-10 flex-wrap items-center gap-x-1 text-sm lg:min-h-0 text-slate-500 hover:text-primary-700"
+                        >
+                          {line.label && <span>{line.label}:</span>}
+                          <span className="font-semibold text-primary-700 underline decoration-primary-200 underline-offset-2">
+                            {line.value}
+                          </span>
+                        </a>
+                      ),
+                    )}
                   </div>
                 </motion.div>
               );
@@ -87,8 +110,8 @@ export function Contact() {
           </div>
 
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className="rounded-3xl border border-slate-100 bg-white p-8 shadow-xl lg:col-span-3 lg:p-10"

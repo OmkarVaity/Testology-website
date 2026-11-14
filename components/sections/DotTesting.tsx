@@ -72,7 +72,7 @@ export function DotTesting() {
               <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500">
                 DOT Authorities We Work With
               </h3>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {authorities.map((auth, i) => (
                   <motion.div
                     key={auth.name}
@@ -85,7 +85,7 @@ export function DotTesting() {
                     <p className="font-display-bolt text-lg font-bold text-white transition-colors group-hover:text-primary-400">
                       {auth.name}
                     </p>
-                    <p className="mt-1 text-[10px] leading-tight text-slate-500">{auth.full}</p>
+                    <p className="mt-1 text-xs leading-snug text-slate-400">{auth.full}</p>
                   </motion.div>
                 ))}
               </div>

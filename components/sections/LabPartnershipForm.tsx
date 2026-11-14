@@ -165,8 +165,8 @@ export function LabPartnershipForm() {
         <legend className="mb-2 text-sm font-medium text-slate-700">How would you like to work with us?</legend>
         <div className="grid gap-2 sm:grid-cols-2">
           {partnershipInterestOptions.map((option) => (
-            <label key={option} className="flex cursor-pointer items-center gap-2.5 py-1 text-sm text-slate-700">
-              <input type="checkbox" value={option} {...register("interests")} className="h-4 w-4 accent-[var(--color-primary-600)]" />
+            <label key={option} className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-slate-700">
+              <input type="checkbox" value={option} {...register("interests")} className="h-5 w-5 shrink-0 accent-[var(--color-primary-600)]" />
               {option}
             </label>
           ))}

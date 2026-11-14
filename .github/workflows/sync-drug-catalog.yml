@@ -20,6 +20,7 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 10 # normally under a minute; stops a hung download from using up Actions minutes
     steps:
       - uses: actions/checkout@v4
 

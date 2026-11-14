@@ -3,7 +3,9 @@ import { Space_Grotesk, Inter, JetBrains_Mono, Poppins } from "next/font/google"
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { MobileActionBar } from "@/components/layout/MobileActionBar";
 import { StructuredData } from "@/components/StructuredData";
+import { MotionPreferences } from "@/components/MotionPreferences";
 import { siteConfig } from "@/content/site-config";
 
 const spaceGrotesk = Space_Grotesk({
@@ -47,9 +49,19 @@ export default function RootLayout({
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${poppins.variable} antialiased`}
       >
         <StructuredData />
-        <Header />
-        {children}
-        <Footer />
+        {/* Lets keyboard and screen-reader users jump past the menu; only visible when focused with Tab. */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-primary-700 focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
+        <MotionPreferences>
+          <Header />
+          <main id="main">{children}</main>
+          <Footer />
+          <MobileActionBar />
+        </MotionPreferences>
       </body>
     </html>
   );

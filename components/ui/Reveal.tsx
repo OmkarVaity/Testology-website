@@ -16,13 +16,7 @@ export function Reveal({ children, delay = 0, className = "" }: RevealProps) {
     const node = ref.current;
     if (!node) return;
 
-    // Respect users who've asked for reduced motion — show content immediately, no animation.
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) {
-      setVisible(true);
-      return;
-    }
-
+    // "Reduce motion" users: the fade still triggers on scroll, but globals.css makes it instant (no movement).
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

@@ -63,32 +63,38 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.3 }}
               className="flex flex-col gap-4 sm:flex-row"
             >
-              <Link href="/contact">
-                <Button
-                  size="lg"
-                  className="group h-14 rounded-xl bg-primary-600 px-8 text-base text-white shadow-xl shadow-primary-500/30 hover:bg-primary-700"
-                >
+              {/* asChild: the link itself is styled as the button (a <button> inside a link is invalid HTML). */}
+              <Button
+                asChild
+                size="lg"
+                className="group h-14 rounded-xl bg-primary-600 px-8 text-base text-white shadow-xl shadow-primary-500/30 hover:bg-primary-700"
+              >
+                <Link href="/contact">
                   Book Appointment
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </Link>
-              <a href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-14 rounded-xl border-2 border-slate-200 px-8 text-base hover:border-primary-300 hover:bg-primary-50"
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-14 rounded-xl border-2 border-slate-200 px-8 text-base hover:border-primary-300 hover:bg-primary-50"
+              >
+                <a
+                  href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`}
+                  aria-label={`Call ${siteConfig.contact.tollFree}`}
                 >
                   <Phone className="mr-2 h-5 w-5 text-primary-600" />
                   {siteConfig.contact.tollFree}
-                </Button>
-              </a>
+                </a>
+              </Button>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.4 }}
-              className="flex items-center gap-4 pt-2"
+              className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2"
             >
               <div className="flex items-center gap-2 text-sm text-slate-600">
                 <Clock className="h-4 w-4 text-primary-600" />

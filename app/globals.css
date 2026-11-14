@@ -30,10 +30,38 @@ body {
   background-color: var(--color-bone);
   color: var(--color-ink);
   font-family: var(--font-body);
+  /* Sections that slide in from the side must never make the page scroll sideways on phones. `clip`, unlike
+     `hidden`, doesn't break the sticky header. */
+  overflow-x: clip;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+/* iPhones zoom into any form field whose text is under 16px, and stay zoomed in. Keep fields at 16px on phones. */
+@media (max-width: 639px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Visitors who turned on "Reduce motion" in their device settings: no smooth scrolling or long animations. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
 }
 
 .bg-texture {

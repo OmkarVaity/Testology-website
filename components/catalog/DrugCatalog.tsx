@@ -78,7 +78,7 @@ function PanelCard({
     <article className="flex flex-col rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:border-primary-200 hover:shadow-md">
       <div className="mb-2 flex items-start justify-between gap-3">
         <h3 className="font-display-bolt text-base font-semibold text-slate-900">
-          <Link href={`/catalog/drugs/${panel.id}`} className="hover:text-primary-700">
+          <Link href={`/catalog/drugs/${panel.id}`} className="-my-1 inline-block py-1 hover:text-primary-700">
             {panel.name}
           </Link>
         </h3>
@@ -121,7 +121,7 @@ function PanelCard({
       <div className="mt-auto flex items-center justify-between gap-3 pt-1">
         <Link
           href={`/catalog/drugs/${panel.id}`}
-          className="flex items-center gap-1 text-sm font-semibold text-primary-700 hover:underline"
+          className="flex min-h-10 items-center gap-1 text-sm font-semibold text-primary-700 hover:underline"
           aria-label={`View details for ${panel.name}`}
         >
           View details
@@ -134,7 +134,7 @@ function PanelCard({
             disabled={!comparing && compareFull}
             aria-pressed={comparing}
             aria-label={`${comparing ? "Remove" : "Add"} ${panel.name} ${comparing ? "from" : "to"} comparison`}
-            className={`flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition disabled:opacity-40 ${
+            className={`flex min-h-10 items-center gap-1 rounded-lg border px-3 text-xs font-semibold transition disabled:opacity-40 ${
               comparing ? "border-primary-600 bg-primary-50 text-primary-800" : "border-slate-200 text-slate-600 hover:bg-slate-50"
             }`}
           >
@@ -146,7 +146,7 @@ function PanelCard({
               type="button"
               onClick={onBuy}
               aria-label={`Buy ${panel.name}`}
-              className="flex items-center gap-1 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-primary-700"
+              className="flex min-h-10 items-center gap-1 rounded-lg bg-primary-600 px-3 text-xs font-semibold text-white transition hover:bg-primary-700"
             >
               <ShoppingCart className="h-3.5 w-3.5" aria-hidden />
               Buy now
@@ -281,7 +281,7 @@ export function DrugCatalog() {
                 type="button"
                 onClick={() => setParams({ cat: value === "all" ? null : value })}
                 aria-pressed={active}
-                className={`whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
+                className={`min-h-10 whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-medium transition ${
                   active ? "border-primary-600 bg-primary-600 text-white" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                 }`}
               >
@@ -301,7 +301,7 @@ export function DrugCatalog() {
               type="button"
               onClick={() => toggleDrug(id)}
               aria-label={`Remove ${getDrugFilterItem(id)?.label}`}
-              className="flex items-center gap-1 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-800 hover:bg-primary-100"
+              className="flex min-h-10 items-center gap-1 rounded-full bg-primary-50 px-3.5 py-1 text-xs font-semibold text-primary-800 hover:bg-primary-100"
             >
               {getDrugFilterItem(id)?.label}
               <X className="h-3 w-3" aria-hidden />
@@ -414,7 +414,7 @@ export function DrugCatalog() {
                         type="button"
                         onClick={() => toggleDrug(item.id)}
                         aria-pressed={active}
-                        className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-sm transition ${
+                        className={`flex min-h-10 items-center gap-1 rounded-full border px-3.5 py-1.5 text-sm transition ${
                           active ? "border-primary-600 bg-primary-600 font-semibold text-white" : "border-slate-200 text-slate-700 hover:bg-slate-50"
                         }`}
                       >
@@ -462,7 +462,7 @@ export function DrugCatalog() {
                   type="button"
                   onClick={() => toggleCompare(p.id)}
                   aria-label={`Remove ${p.name} from comparison`}
-                  className="flex max-w-full items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200"
+                  className="flex min-h-10 max-w-full items-center gap-1 rounded-full bg-slate-100 px-3.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200"
                 >
                   <span className="truncate">{p.name}</span>
                   <X className="h-3 w-3 shrink-0" aria-hidden />

@@ -75,7 +75,7 @@ export function FeaturedTests() {
               <p className="mb-5 text-sm text-slate-600">{panel.desc}</p>
               <Link
                 href="/services/rapid-drug-testing"
-                className="group inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 transition-colors hover:text-primary-700"
+                className="group inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary-600 transition-colors hover:text-primary-700"
               >
                 Learn more
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

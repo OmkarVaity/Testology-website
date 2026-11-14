@@ -27,6 +27,14 @@ export function Header() {
     }
   }
 
+  // Esc closes the phone menu wherever focus is in the header, and puts focus back on the ☰ button.
+  function handleHeaderKeyDown(e: React.KeyboardEvent<HTMLElement>) {
+    if (e.key === "Escape" && mobileOpen) {
+      setMobileOpen(false);
+      e.currentTarget.querySelector<HTMLElement>('[aria-controls="mobile-menu"]')?.focus();
+    }
+  }
+
   function handleDropdownBlur(e: React.FocusEvent<HTMLDivElement>) {
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setOpenMenu(null);
@@ -46,6 +54,7 @@ export function Header() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
+        onKeyDown={handleHeaderKeyDown}
         className={`sticky top-0 z-50 w-full transition-all duration-300 ${
           scrolled
             ? "border-b border-slate-200/60 bg-white/90 shadow-lg backdrop-blur-xl"
@@ -62,9 +71,9 @@ export function Header() {
               height={44}
               className="rounded-full shadow-lg shadow-primary-500/20 transition-transform group-hover:scale-105"
             />
-            <div className="hidden flex-col leading-none sm:flex">
+            <div className="flex flex-col leading-none">
               <span className="font-display-bolt whitespace-nowrap text-lg font-bold text-slate-900 lg:text-xl">
-                Testology
+                Testology, Inc.
               </span>
               <span className="whitespace-nowrap text-[10px] font-medium tracking-wide text-slate-500 lg:text-xs">
                 NORMALIZED SCIENTIFIC PRECISION
@@ -176,17 +185,20 @@ export function Header() {
               <Phone className="mr-2 h-4 w-4 flex-shrink-0" />
               <span>{siteConfig.contact.tollFree}</span>
             </a>
-            <Link href="/contact">
-              <Button className="whitespace-nowrap rounded-xl bg-primary-600 px-5 shadow-lg shadow-primary-500/30 hover:bg-primary-700">
-                Book Appointment
-              </Button>
-            </Link>
+            <Button
+              asChild
+              className="whitespace-nowrap rounded-xl bg-primary-600 px-5 shadow-lg shadow-primary-500/30 hover:bg-primary-700"
+            >
+              <Link href="/contact">Book Appointment</Link>
+            </Button>
           </div>
 
           <button
             className="p-2 text-slate-700 xl:hidden"
             onClick={() => setMobileOpen((v) => !v)}
-            aria-label="Toggle menu"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
           >
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -199,7 +211,8 @@ export function Header() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="overflow-hidden border-t border-slate-100 bg-white xl:hidden"
+              id="mobile-menu"
+              className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-slate-100 bg-white xl:hidden"
             >
               <div className="container-wide flex flex-col gap-1 py-4">
                 {siteConfig.primaryNav.map((link) => (
@@ -240,16 +253,16 @@ export function Header() {
                 <div className="mt-2 flex flex-col gap-3 border-t border-slate-100 pt-3">
                   <a
                     href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`}
-                    className="flex items-center gap-2 px-4 text-sm font-semibold text-slate-700"
+                    className="flex min-h-11 items-center gap-2 px-4 text-sm font-semibold text-slate-700"
                   >
                     <Phone className="h-4 w-4" />
                     {siteConfig.contact.tollFree}
                   </a>
-                  <Link href="/contact" onClick={() => setMobileOpen(false)}>
-                    <Button className="w-full rounded-xl bg-primary-600 hover:bg-primary-700">
+                  <Button asChild className="h-12 w-full rounded-xl bg-primary-600 text-base hover:bg-primary-700">
+                    <Link href="/contact" onClick={() => setMobileOpen(false)}>
                       Book Appointment
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </div>
               </div>
             </motion.div>

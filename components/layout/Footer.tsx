@@ -65,8 +65,9 @@ export function Footer() {
       <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-primary-500/5 blur-3xl" />
 
       <div className="container-wide relative z-10 py-16">
-        <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-4">
+        {/* Phones: link lists side by side in two columns instead of one long stack. */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-12 lg:gap-12">
+          <div className="col-span-2 lg:col-span-4">
             <div className="mb-5 flex items-center gap-2.5">
               <Image
                 src="/logo.png"
@@ -76,50 +77,53 @@ export function Footer() {
                 className="rounded-full"
               />
               <div>
-                <p className="font-display-bolt text-xl font-bold">Testology</p>
-                <p className="text-xs text-slate-500">NORMALIZED SCIENTIFIC PRECISION</p>
+                <p className="font-display-bolt text-xl font-bold">Testology, Inc.</p>
+                <p className="text-xs text-slate-400">NORMALIZED SCIENTIFIC PRECISION</p>
               </div>
             </div>
             <p className="mb-6 max-w-sm text-sm leading-relaxed text-slate-400">
               The most reliable, efficient, and professional medical examiners in Massachusetts.
               Quest Preferred Site, eScreen Top Site, LabCorp Collection Site.
             </p>
-            <div className="space-y-3">
+            <div className="space-y-1 lg:space-y-3">
               <a
                 href={`tel:+1${siteConfig.contact.tollFree.replace(/-/g, "")}`}
-                className="flex items-center gap-3 text-sm text-slate-400 transition-colors hover:text-primary-400"
+                className="flex min-h-10 items-center gap-3 text-sm text-slate-400 transition-colors hover:text-primary-400 lg:min-h-0"
               >
-                <Phone className="h-4 w-4" />
+                <Phone className="h-4 w-4" aria-hidden />
                 {siteConfig.contact.tollFree}
               </a>
               <a
                 href={`mailto:${siteConfig.contact.examsEmail}`}
-                className="flex items-center gap-3 text-sm text-slate-400 transition-colors hover:text-primary-400"
+                className="flex min-h-10 items-center gap-3 text-sm text-slate-400 transition-colors hover:text-primary-400 lg:min-h-0"
               >
-                <Mail className="h-4 w-4" />
+                <Mail className="h-4 w-4" aria-hidden />
                 {siteConfig.contact.examsEmail}
               </a>
               <div className="flex items-start gap-3 text-sm text-slate-400">
-                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden />
                 {siteConfig.location.line1}, {siteConfig.location.line2}
               </div>
             </div>
             <div className="mt-6 flex gap-3">
               <a
                 href={siteConfig.social.instagram}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-400 transition-all duration-300 hover:border-primary-600 hover:bg-primary-600 hover:text-white"
+                aria-label="Testology on Instagram"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-400 transition-all duration-300 hover:border-primary-600 hover:bg-primary-600 hover:text-white"
               >
                 <InstagramIcon />
               </a>
               <a
                 href={siteConfig.social.facebook}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-400 transition-all duration-300 hover:border-primary-600 hover:bg-primary-600 hover:text-white"
+                aria-label="Testology on Facebook"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-400 transition-all duration-300 hover:border-primary-600 hover:bg-primary-600 hover:text-white"
               >
                 <FacebookIcon />
               </a>
               <a
                 href={siteConfig.social.linkedin}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-400 transition-all duration-300 hover:border-primary-600 hover:bg-primary-600 hover:text-white"
+                aria-label="Testology on LinkedIn"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-slate-400 transition-all duration-300 hover:border-primary-600 hover:bg-primary-600 hover:text-white"
               >
                 <LinkedinIcon />
               </a>
@@ -131,14 +135,18 @@ export function Footer() {
               <h3 className="font-display-bolt mb-4 text-sm font-semibold uppercase tracking-wider text-slate-300">
                 {category}
               </h3>
-              <ul className="space-y-2.5">
+              <ul className="lg:space-y-2.5">
                 {links.map((link) => (
                   <li key={link.href}>
+                    {/* 40px-tall rows on phones so links are easy to tap; compact list on desktop. */}
                     <Link
                       href={link.href}
-                      className="group flex items-center gap-1 text-sm text-slate-400 transition-colors hover:text-primary-400"
+                      className="group flex min-h-10 items-center gap-1 text-sm text-slate-400 transition-colors hover:text-primary-400 lg:min-h-0"
                     >
-                      <ArrowRight className="h-3 w-3 -translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+                      <ArrowRight
+                        className="hidden h-3 w-3 -translate-x-2 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100 lg:block"
+                        aria-hidden
+                      />
                       {link.label}
                     </Link>
                   </li>
@@ -147,7 +155,7 @@ export function Footer() {
             </div>
           ))}
 
-          <div className="lg:col-span-2">
+          <div className="col-span-2 lg:col-span-2">
             <h3 className="font-display-bolt mb-4 text-sm font-semibold uppercase tracking-wider text-slate-300">
               Get Started
             </h3>
@@ -159,23 +167,24 @@ export function Footer() {
               className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/30 transition-colors hover:bg-primary-700"
             >
               Book Now
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
           </div>
         </div>
 
+        {/* slate-400 (not 500) on the dark background, so small text meets WCAG AA contrast. */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-8 sm:flex-row">
-          <p className="text-sm text-slate-500">
+          <p className="text-center text-sm text-slate-400">
             &copy; {new Date().getFullYear()} {siteConfig.name} All rights reserved.
           </p>
-          <div className="flex flex-wrap justify-center gap-5 text-sm text-slate-500">
-            <Link href="/privacy-policy" className="hover:text-primary-400">
+          <div className="flex flex-wrap justify-center gap-x-5 text-sm text-slate-400">
+            <Link href="/privacy-policy" className="flex min-h-10 items-center hover:text-primary-400">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-primary-400">
+            <Link href="/terms" className="flex min-h-10 items-center hover:text-primary-400">
               Terms of Service
             </Link>
-            <Link href="/hipaa-notice" className="hover:text-primary-400">
+            <Link href="/hipaa-notice" className="flex min-h-10 items-center hover:text-primary-400">
               HIPAA Notice
             </Link>
           </div>

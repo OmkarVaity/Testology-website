@@ -96,15 +96,16 @@ export function EmployerSolutions() {
               ))}
             </div>
 
-            <Link href="/contact">
-              <Button
-                size="lg"
-                className="group rounded-xl bg-primary-600 px-8 text-white shadow-lg shadow-primary-500/30 hover:bg-primary-700"
-              >
+            <Button
+              asChild
+              size="lg"
+              className="group rounded-xl bg-primary-600 px-8 text-white shadow-lg shadow-primary-500/30 hover:bg-primary-700"
+            >
+              <Link href="/contact">
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">

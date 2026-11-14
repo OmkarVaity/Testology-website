@@ -206,7 +206,7 @@ export default async function DrugPanelPage({ params }: Props) {
               </li>
             ))}
           </ul>
-          <Link href="/catalog/drugs" className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-primary-700 hover:underline">
+          <Link href="/catalog/drugs" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-700 hover:underline">
             Browse the full catalog
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
