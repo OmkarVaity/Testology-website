@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileActionBar } from "@/components/layout/MobileActionBar";
+import { AnnouncementDialog } from "@/components/layout/AnnouncementDialog";
 import { StructuredData } from "@/components/StructuredData";
 import { MotionPreferences } from "@/components/MotionPreferences";
 import { siteConfig } from "@/content/site-config";
@@ -61,6 +62,7 @@ export default function RootLayout({
           <main id="main">{children}</main>
           <Footer />
           <MobileActionBar />
+          <AnnouncementDialog />
         </MotionPreferences>
       </body>
     </html>
